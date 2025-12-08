@@ -302,7 +302,11 @@ namespace BIMKraft.Services
                 // In Revit API, structural columns are typically in OST_StructuralColumns category
                 // If it's in OST_Columns and we need to check structural, try the parameter
                 Category category = element.Category;
+#if REVIT2025
+                if (category != null && category.Id.Value == (long)BuiltInCategory.OST_StructuralColumns)
+#else
                 if (category != null && category.Id.IntegerValue == (int)BuiltInCategory.OST_StructuralColumns)
+#endif
                 {
                     return true;
                 }
@@ -360,12 +364,16 @@ namespace BIMKraft.Services
                     return false;
                 }
 
+#if REVIT2025
+                long categoryId = category.Id.Value;
+#else
                 int categoryId = category.Id.IntegerValue;
+#endif
 
                 // Check if element is in steel-related categories
-                return categoryId == (int)BuiltInCategory.OST_StructuralFraming ||
-                       categoryId == (int)BuiltInCategory.OST_StructuralColumns ||
-                       categoryId == (int)BuiltInCategory.OST_Truss;
+                return categoryId == (long)BuiltInCategory.OST_StructuralFraming ||
+                       categoryId == (long)BuiltInCategory.OST_StructuralColumns ||
+                       categoryId == (long)BuiltInCategory.OST_Truss;
                 // Note: OST_GenericModel is intentionally not included here to avoid false positives
                 // Generic models should be evaluated case-by-case based on material or family name
             }
@@ -389,13 +397,17 @@ namespace BIMKraft.Services
                     return false;
                 }
 
+#if REVIT2025
+                long categoryId = category.Id.Value;
+#else
                 int categoryId = category.Id.IntegerValue;
+#endif
 
                 // Check if element is in reinforcement-related categories
-                return categoryId == (int)BuiltInCategory.OST_Rebar ||
-                       categoryId == (int)BuiltInCategory.OST_FabricReinforcement ||
-                       categoryId == (int)BuiltInCategory.OST_FabricAreas ||
-                       categoryId == (int)BuiltInCategory.OST_FabricReinforcementWire;
+                return categoryId == (long)BuiltInCategory.OST_Rebar ||
+                       categoryId == (long)BuiltInCategory.OST_FabricReinforcement ||
+                       categoryId == (long)BuiltInCategory.OST_FabricAreas ||
+                       categoryId == (long)BuiltInCategory.OST_FabricReinforcementWire;
             }
             catch
             {

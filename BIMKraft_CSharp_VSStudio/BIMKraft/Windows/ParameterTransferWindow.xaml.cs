@@ -827,21 +827,33 @@ namespace BIMKraft.Windows
                                     if (sourceParam == null)
                                     {
                                         results.SkippedCount++;
+#if REVIT2025
+                                        results.Details.Add($"SKIP: Element {element.Id.Value} - Source parameter '{mapping.SourceParameter}' not found");
+#else
                                         results.Details.Add($"SKIP: Element {element.Id.IntegerValue} - Source parameter '{mapping.SourceParameter}' not found");
+#endif
                                         continue;
                                     }
 
                                     if (targetParam == null)
                                     {
                                         results.SkippedCount++;
+#if REVIT2025
+                                        results.Details.Add($"SKIP: Element {element.Id.Value} - Target parameter '{mapping.TargetParameter}' not found");
+#else
                                         results.Details.Add($"SKIP: Element {element.Id.IntegerValue} - Target parameter '{mapping.TargetParameter}' not found");
+#endif
                                         continue;
                                     }
 
                                     if (targetParam.IsReadOnly)
                                     {
                                         results.SkippedCount++;
+#if REVIT2025
+                                        results.Details.Add($"SKIP: Element {element.Id.Value} - Target parameter is read-only");
+#else
                                         results.Details.Add($"SKIP: Element {element.Id.IntegerValue} - Target parameter is read-only");
+#endif
                                         continue;
                                     }
 
@@ -878,18 +890,30 @@ namespace BIMKraft.Windows
                                     if (transferred)
                                     {
                                         results.SuccessCount++;
+#if REVIT2025
+                                        results.Details.Add($"SUCCESS: Element {element.Id.Value} - {mapping.SourceParameter} → {mapping.TargetParameter}");
+#else
                                         results.Details.Add($"SUCCESS: Element {element.Id.IntegerValue} - {mapping.SourceParameter} → {mapping.TargetParameter}");
+#endif
                                     }
                                     else
                                     {
                                         results.FailedCount++;
+#if REVIT2025
+                                        results.Details.Add($"FAIL: Element {element.Id.Value} - Type mismatch or error");
+#else
                                         results.Details.Add($"FAIL: Element {element.Id.IntegerValue} - Type mismatch or error");
+#endif
                                     }
                                 }
                                 catch (Exception ex)
                                 {
                                     results.FailedCount++;
+#if REVIT2025
+                                    results.Details.Add($"ERROR: Element {element.Id.Value} - {ex.Message}");
+#else
                                     results.Details.Add($"ERROR: Element {element.Id.IntegerValue} - {ex.Message}");
+#endif
                                 }
                             }
                         }
