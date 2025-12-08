@@ -1,9 +1,9 @@
 @echo off
-echo Building WIP Tools for Revit 2025...
+echo Building BIM Kraft Tools for Revit 2025...
 echo.
 
 set MSBUILD="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
-set PROJECT=..\ICLTools.csproj
+set PROJECT=..\BIMKraft.csproj
 
 echo Restoring NuGet packages for Revit 2025...
 %MSBUILD% %PROJECT% /t:Restore /p:Configuration=Debug /p:Platform=x64 /p:RevitVersion=2025
@@ -25,8 +25,10 @@ echo.
 
 echo Build completed successfully!
 echo.
-echo DLL deployed to: %%AppData%%\Autodesk\Revit\Addins\2025\ICLTools.dll
+echo DLL deployed to: %%AppData%%\Autodesk\Revit\Addins\2025\BIMKraft.dll
 echo.
-echo New tool added: Parameter Transfer Pro
-echo   Location: WIP Tools tab ^> Parameter Tools panel
+echo Tools available in BIMKraft tab:
+echo   - Parameter Pro (Parameter Tools panel)
+echo   - Parameter Transfer Pro (Parameter Tools panel)
+echo   - Workset Tools (Workset Tools panel)
 pause

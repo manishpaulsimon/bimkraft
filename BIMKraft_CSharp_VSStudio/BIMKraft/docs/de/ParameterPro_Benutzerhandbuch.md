@@ -21,7 +21,7 @@ BIM Kraft Parameter Pro ist ein fortschrittliches Parameterverwaltungstool für 
 ### Tool starten
 
 1. Öffnen Sie Ihr Revit-Projekt
-2. Navigieren Sie zur Registerkarte **ICL** im Revit-Menüband
+2. Navigieren Sie zur Registerkarte **BIMKraft** im Revit-Menüband
 3. Klicken Sie auf die Schaltfläche **Parameter Pro** im Bereich "Parameter Tools"
 
 ### Voraussetzungen

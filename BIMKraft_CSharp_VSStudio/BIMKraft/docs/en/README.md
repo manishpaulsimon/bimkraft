@@ -37,15 +37,15 @@ Additional tools will be added to the BIMKraft tab as the suite expands.
 2. Copy `BIMKraft Tools.dll` to:
    - `%AppData%\Autodesk\Revit\Addins\[VERSION]\`
    - Replace [VERSION] with your Revit version (2023, 2024, 2025, or 2026)
-3. Copy `ICLParameterPro.addin` to the same folder
+3. Copy `BIMKraft.addin` to the same folder
 4. Copy any required dependency DLLs (e.g., `Newtonsoft.Json.dll`) to the same folder
 5. Launch Revit
-6. Look for the **ICL** tab in the ribbon
+6. Look for the **BIMKraft** tab in the ribbon
 
 ### Verification
 
 After installation, you should see:
-- A new **ICL** tab in the Revit ribbon
+- A new **BIMKraft** tab in the Revit ribbon
 - **Parameter Tools** panel with the **Parameter Pro** button
 
 ---

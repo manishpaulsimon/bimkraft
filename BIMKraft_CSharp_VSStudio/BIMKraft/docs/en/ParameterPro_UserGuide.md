@@ -21,7 +21,7 @@ BIM Kraft Parameter Pro is an advanced parameter management tool for Autodesk Re
 ### Launching the Tool
 
 1. Open your Revit project
-2. Navigate to the **ICL** tab in the Revit ribbon
+2. Navigate to the **BIMKraft** tab in the Revit ribbon
 3. Click on **Parameter Pro** button in the "Parameter Tools" panel
 
 ### Requirements

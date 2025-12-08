@@ -1,4 +1,4 @@
-# ICLTools Documentation Index
+# BIMKraft Tools Documentation Index
 
 ## Overview
 
@@ -238,4 +238,4 @@ When adding a new tool, ensure:
 
 **ICLTools Documentation** - Comprehensive, Bilingual, Developer-Friendly
 
-*Maintained by the ICL Development Team*
+*Maintained by the BIM Kraft Development Team*

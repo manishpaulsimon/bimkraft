@@ -1,11 +1,11 @@
-# ICLTools Code Reorganization Summary
+# BIMKraft Code Reorganization Summary
 
 **Date:** December 8, 2025
 **Version:** 1.3
 
 ## Overview
 
-The ICLTools codebase has been professionally reorganized to improve maintainability, scalability, and code organization. Commands are now grouped by their Revit ribbon panel, making it easier to navigate and add new tools.
+The BIMKraft codebase has been professionally reorganized to improve maintainability, scalability, and code organization. Commands are now grouped by their Revit ribbon panel, making it easier to navigate and add new tools.
 
 ---
 
@@ -46,14 +46,14 @@ Commands/
 All command classes now use panel-specific namespaces:
 
 **Parameter Tools:**
-- `namespace ICLTools.Commands.ParameterTools`
+- `namespace BIMKraft.Commands.ParameterTools`
 
 **Workset Tools:**
-- `namespace ICLTools.Commands.WorksetTools`
+- `namespace BIMKraft.Commands.WorksetTools`
 
 ### 3. **Project File Updates**
 
-`ICLTools.csproj` now clearly organizes compile items by panel:
+`BIMKraft.csproj` now clearly organizes compile items by panel:
 
 ```xml
 <ItemGroup>
@@ -74,12 +74,12 @@ All command classes now use panel-specific namespaces:
 
 ```csharp
 // Parameter Tools
-"ICLTools.Commands.ParameterTools.AddParameterProCommand"
-"ICLTools.Commands.ParameterTools.ParameterTransferProCommand"
+"BIMKraft.Commands.ParameterTools.AddParameterProCommand"
+"BIMKraft.Commands.ParameterTools.ParameterTransferProCommand"
 
 // Workset Tools
-"ICLTools.Commands.WorksetTools.AssignGridsLevelsCommand"
-"ICLTools.Commands.WorksetTools.AssignReferencesCommand"
+"BIMKraft.Commands.WorksetTools.AssignGridsLevelsCommand"
+"BIMKraft.Commands.WorksetTools.AssignReferencesCommand"
 // ... etc
 ```
 
@@ -128,7 +128,7 @@ Updated documentation files:
 ## Full Project Structure (Updated)
 
 ```
-ICLTools/
+BIMKraft/
 ├── build/                             # Build scripts
 │   ├── build_2023_2024.bat
 │   ├── build_2025.bat
@@ -174,8 +174,8 @@ ICLTools/
 │   └── AssemblyInfo.cs
 │
 ├── ICLRibbonApplication.cs            # Ribbon setup
-├── ICLTools.csproj                    # Project file
-├── ICLTools.addin                     # Revit addin manifest
+├── BIMKraft.csproj                    # Project file
+├── BIMKraft.addin                     # Revit addin manifest
 └── App.config                         # Configuration
 ```
 
@@ -190,20 +190,20 @@ ICLTools/
 
 2. **Add your command class:**
    ```csharp
-   namespace ICLTools.Commands.YourNewPanel
+   namespace BIMKraft.Commands.YourNewPanel
    {
        public class YourToolCommand : IExternalCommand { ... }
    }
    ```
 
-3. **Update `ICLTools.csproj`:**
+3. **Update `BIMKraft.csproj`:**
    ```xml
    <Compile Include="Commands\YourNewPanel\YourToolCommand.cs" />
    ```
 
 4. **Register in `ICLRibbonApplication.cs`:**
    ```csharp
-   "ICLTools.Commands.YourNewPanel.YourToolCommand"
+   "BIMKraft.Commands.YourNewPanel.YourToolCommand"
    ```
 
 5. **Add documentation** to the appropriate docs folder
@@ -228,4 +228,4 @@ ICLTools/
 
 ---
 
-**ICLTools - Professional Code Organization for Revit Productivity**
+**BIMKraft - Professional Code Organization for Revit Productivity**

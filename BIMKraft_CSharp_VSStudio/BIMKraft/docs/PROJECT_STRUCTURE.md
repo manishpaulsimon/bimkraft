@@ -1,18 +1,18 @@
-# ICLTools Project Structure Guide
+# BIMKraft Project Structure Guide
 
 ## Overview
-This guide explains how to organize multiple tools within the ICLTools project for Revit.
+This guide explains how to organize multiple tools within the BIMKraft project for Revit.
 
 ## Current Project Structure
 
 ```
-ICLTools/
-├── ICLTools.csproj                    # Main project file
-├── ICLTools.sln                       # Solution file
-├── ICLTools.addin                     # Revit addin manifest
+BIMKraft/
+├── BIMKraft.csproj                    # Main project file
+├── BIMKraft.sln                       # Solution file
+├── BIMKraft.addin                     # Revit addin manifest
 ├── App.config                         # Application configuration
 ├── packages.config                    # NuGet packages
-├── ICLRibbonApplication.cs            # **Main Ribbon Setup**
+├── BIMKraftRibbonApplication.cs            # **Main Ribbon Setup**
 │
 ├── build/                             # **Build Scripts**
 │   ├── build_all_versions.bat         # Build for all Revit versions
@@ -95,15 +95,15 @@ Follow this pattern:
 - Windows: `[ToolName]Window.xaml` (e.g., `ParameterManagerWindow.xaml`)
 - Models: `[EntityName].cs` (e.g., `ParameterConfig.cs`)
 
-### 3. **ICLRibbonApplication.cs**
+### 3. **BIMKraftRibbonApplication.cs**
 
 This is the central file where all tools are registered to the Revit ribbon. Structure it like this:
 
 ```csharp
 public Result OnStartup(UIControlledApplication application)
 {
-    // Create ICL Tab (once)
-    string tabName = "ICL";
+    // Create BIMKraft Tab (once)
+    string tabName = "BIMKraft";
     try
     {
         application.CreateRibbonTab(tabName);
@@ -131,13 +131,13 @@ private void CreateParameterProButton(RibbonPanel panel)
     string assemblyPath = Assembly.GetExecutingAssembly().Location;
 
     PushButtonData buttonData = new PushButtonData(
-        "ICLParameterPro",
+        "BIMKraftParameterPro",
         "Parameter\nPro",
         assemblyPath,
-        "ICLParameterPro.AddParameterProCommand"  // Full namespace.classname
+        "BIMKraftParameterPro.AddParameterProCommand"  // Full namespace.classname
     );
 
-    buttonData.ToolTip = "ICL Parameter Pro";
+    buttonData.ToolTip = "BIM Kraft Parameter Pro";
     buttonData.LongDescription = "Manage project parameters...";
 
     // Set icon (optional)
@@ -163,7 +163,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
-namespace ICLTools.Commands
+namespace BIMKraft.Commands
 {
     [Transaction(TransactionMode.Manual)]
     public class YourNewCommand : IExternalCommand
@@ -192,7 +192,7 @@ namespace ICLTools.Commands
 Create `Windows/YourNewWindow.xaml`:
 
 ```xml
-<Window x:Class="ICLTools.Windows.YourNewWindow"
+<Window x:Class="BIMKraft.Windows.YourNewWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Your Tool Name"
@@ -209,7 +209,7 @@ Create `Windows/YourNewWindow.xaml.cs`:
 using System.Windows;
 using Autodesk.Revit.DB;
 
-namespace ICLTools.Windows
+namespace BIMKraft.Windows
 {
     public partial class YourNewWindow : Window
     {
@@ -228,7 +228,7 @@ namespace ICLTools.Windows
 
 ### Step 3: Update Project File
 
-Update `ICLTools.csproj` to include new files:
+Update `BIMKraft.csproj` to include new files:
 
 ```xml
 <ItemGroup>
@@ -248,7 +248,7 @@ Update `ICLTools.csproj` to include new files:
 
 ### Step 4: Register in Ribbon
 
-Update `ICLRibbonApplication.cs`:
+Update `BIMKraftRibbonApplication.cs`:
 
 ```csharp
 public Result OnStartup(UIControlledApplication application)
@@ -269,7 +269,7 @@ private void CreateYourNewToolButton(RibbonPanel panel)
         "YourToolID",
         "Your Tool\nName",
         assemblyPath,
-        "ICLTools.Commands.YourNewCommand"
+        "BIMKraft.Commands.YourNewCommand"
     );
 
     buttonData.ToolTip = "Your tool description";
@@ -299,11 +299,11 @@ Create documentation files:
 ### 3. **Namespace Organization**
 Use consistent namespaces:
 ```csharp
-namespace ICLTools.Commands { }
-namespace ICLTools.Windows { }
-namespace ICLTools.Models { }
-namespace ICLTools.Services { }
-namespace ICLTools.Utilities { }
+namespace BIMKraft.Commands { }
+namespace BIMKraft.Windows { }
+namespace BIMKraft.Models { }
+namespace BIMKraft.Services { }
+namespace BIMKraft.Utilities { }
 ```
 
 ### 4. **Resource Management**
@@ -329,7 +329,7 @@ catch (Exception ex)
 ## Example: Multiple Tools Setup
 
 ```
-ICL Tab
+BIMKraft Tab
 ├── Parameter Tools Panel
 │   ├── Parameter Pro        (Existing)
 │   ├── Parameter Sync       (New tool)
@@ -345,7 +345,7 @@ ICL Tab
 
 ## Deployment
 
-All tools compile into a single DLL (`ICLTools.dll`):
+All tools compile into a single DLL (`BIMKraft.dll`):
 - Easier to maintain
 - Single addin file
 - Shared resources and dependencies

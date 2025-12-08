@@ -1,6 +1,6 @@
 # Quick Start Guide for Developers
 
-## Adding a New Tool to ICLTools
+## Adding a New Tool to BIMKraft
 
 This is a condensed step-by-step guide for adding a new tool. For detailed information, see [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md).
 
@@ -22,7 +22,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 
-namespace ICLTools.Commands.YourPanelName
+namespace BIMKraft.Commands.YourPanelName
 {
     [Transaction(TransactionMode.Manual)]
     public class YourToolCommand : IExternalCommand
@@ -54,7 +54,7 @@ namespace ICLTools.Commands.YourPanelName
 **File:** `Windows/YourToolWindow.xaml`
 
 ```xml
-<Window x:Class="ICLTools.Windows.YourToolWindow"
+<Window x:Class="BIMKraft.Windows.YourToolWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Your Tool Name"
@@ -76,7 +76,7 @@ namespace ICLTools.Commands.YourPanelName
 using System.Windows;
 using Autodesk.Revit.DB;
 
-namespace ICLTools.Windows
+namespace BIMKraft.Windows
 {
     public partial class YourToolWindow : Window
     {
@@ -93,7 +93,7 @@ namespace ICLTools.Windows
 
 ### Step 3: Update Project File
 
-Edit `ICLTools.csproj` and add to the appropriate ItemGroup:
+Edit `BIMKraft.csproj` and add to the appropriate ItemGroup:
 
 ```xml
 <!-- Add to Compile ItemGroup -->
@@ -115,7 +115,7 @@ Edit `ICLTools.csproj` and add to the appropriate ItemGroup:
 
 ### Step 4: Register in Ribbon
 
-Edit `ICLRibbonApplication.cs`:
+Edit `BIMKraftRibbonApplication.cs`:
 
 **Add to OnStartup method:**
 ```csharp
@@ -123,7 +123,7 @@ public Result OnStartup(UIControlledApplication application)
 {
     try
     {
-        string tabName = "ICL";
+        string tabName = "BIMKraft";
 
         // Create tab (existing code)
         try { application.CreateRibbonTab(tabName); } catch { }
@@ -157,7 +157,7 @@ private void CreateYourToolButton(RibbonPanel panel)
         "YourToolID",              // Internal ID
         "Your Tool\nName",         // Display name (use \n for two lines)
         assemblyPath,
-        "ICLTools.Commands.YourPanelName.YourToolCommand"  // Full namespace.class
+        "BIMKraft.Commands.YourPanelName.YourToolCommand"  // Full namespace.class
     );
 
     buttonData.ToolTip = "Short description";
@@ -166,7 +166,7 @@ private void CreateYourToolButton(RibbonPanel panel)
         "Can be multiple lines.";
 
     // Optional: Add icon
-    // buttonData.LargeImage = new BitmapImage(new Uri("pack://application:,,,/ICLTools;component/Resources/Icons/YourIcon.png"));
+    // buttonData.LargeImage = new BitmapImage(new Uri("pack://application:,,,/BIMKraft;component/Resources/Icons/YourIcon.png"));
 
     panel.AddItem(buttonData);
 }
@@ -176,14 +176,14 @@ private void CreateYourToolButton(RibbonPanel panel)
 
 1. **Build the project:**
    ```bash
-   msbuild ICLTools.csproj /p:Configuration=Debug /p:RevitVersion=2025
+   msbuild BIMKraft.csproj /p:Configuration=Debug /p:RevitVersion=2025
    ```
 
 2. **Test in Revit:**
    - Close Revit
    - Build will copy DLL automatically (if build succeeds)
    - Open Revit
-   - Look for ICL tab → Your button
+   - Look for BIMKraft tab → Your button
 
 3. **Debug if needed:**
    - Attach Visual Studio debugger to Revit.exe
@@ -239,7 +239,7 @@ Autodesk.Revit.ApplicationServices.Application app = uiApp.Application;
 ## Folder Organization
 
 ```
-ICLTools/
+BIMKraft/
 ├── Commands/
 │   ├── ParameterTools/                 ← Parameter Tools panel
 │   │   ├── AddParameterProCommand.cs
@@ -263,7 +263,7 @@ ICLTools/
 ├── Utilities/                          ← Optional: helpers
 │   └── YourHelper.cs
 │
-└── ICLRibbonApplication.cs             ← Register your tool here
+└── BIMKraftRibbonApplication.cs             ← Register your tool here
 ```
 
 ---
@@ -274,16 +274,16 @@ The project supports multiple Revit versions:
 
 ```bash
 # Revit 2023
-msbuild ICLTools.csproj /p:RevitVersion=2023
+msbuild BIMKraft.csproj /p:RevitVersion=2023
 
 # Revit 2024
-msbuild ICLTools.csproj /p:RevitVersion=2024
+msbuild BIMKraft.csproj /p:RevitVersion=2024
 
 # Revit 2025
-msbuild ICLTools.csproj /p:RevitVersion=2025
+msbuild BIMKraft.csproj /p:RevitVersion=2025
 
 # Revit 2026
-msbuild ICLTools.csproj /p:RevitVersion=2026
+msbuild BIMKraft.csproj /p:RevitVersion=2026
 ```
 
 ---
@@ -293,18 +293,18 @@ msbuild ICLTools.csproj /p:RevitVersion=2026
 Keep namespaces organized:
 
 ```csharp
-namespace ICLTools.Commands { }    // Command classes
-namespace ICLTools.Windows { }     // UI windows
-namespace ICLTools.Models { }      // Data models
-namespace ICLTools.Services { }    // Business logic
-namespace ICLTools.Utilities { }   // Helper classes
+namespace BIMKraft.Commands { }    // Command classes
+namespace BIMKraft.Windows { }     // UI windows
+namespace BIMKraft.Models { }      // Data models
+namespace BIMKraft.Services { }    // Business logic
+namespace BIMKraft.Utilities { }   // Helper classes
 ```
 
 ---
 
 ## Testing Checklist
 
-- [ ] Tool appears in ICL ribbon tab
+- [ ] Tool appears in BIMKraft ribbon tab
 - [ ] Button tooltip shows correctly
 - [ ] Window opens without errors
 - [ ] All UI elements render properly

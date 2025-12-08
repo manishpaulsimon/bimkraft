@@ -1,9 +1,9 @@
 @echo off
-echo Building WIP Tools for Revit 2023 and 2024...
+echo Building BIM Kraft Tools for Revit 2023 and 2024...
 echo.
 
 set MSBUILD="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
-set PROJECT=..\ICLTools.csproj
+set PROJECT=..\BIMKraft.csproj
 
 echo Restoring NuGet packages for Revit 2023...
 %MSBUILD% %PROJECT% /t:Restore /p:Configuration=Debug /p:Platform=x64 /p:RevitVersion=2023
@@ -44,9 +44,11 @@ echo.
 echo All builds completed successfully!
 echo.
 echo DLLs deployed to:
-echo   - %%AppData%%\Autodesk\Revit\Addins\2023\ICLTools.dll
-echo   - %%AppData%%\Autodesk\Revit\Addins\2024\ICLTools.dll
+echo   - %%AppData%%\Autodesk\Revit\Addins\2023\BIMKraft.dll
+echo   - %%AppData%%\Autodesk\Revit\Addins\2024\BIMKraft.dll
 echo.
-echo New tool added: Parameter Transfer Pro
-echo   Location: WIP Tools tab ^> Parameter Tools panel
+echo Tools available in BIMKraft tab:
+echo   - Parameter Pro (Parameter Tools panel)
+echo   - Parameter Transfer Pro (Parameter Tools panel)
+echo   - Workset Tools (Workset Tools panel)
 pause
