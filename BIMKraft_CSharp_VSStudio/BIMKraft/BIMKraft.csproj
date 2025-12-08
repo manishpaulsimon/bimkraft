@@ -1,0 +1,114 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>BIMKraft</RootNamespace>
+    <AssemblyName>BIMKraft</AssemblyName>
+    <PlatformTarget>x64</PlatformTarget>
+    <Platforms>x64</Platforms>
+    <Configurations>Debug;Release</Configurations>
+    <LangVersion>latest</LangVersion>
+    <UseWPF>true</UseWPF>
+    <RevitVersion Condition=" '$(RevitVersion)' == '' ">2023</RevitVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <!-- Explicitly include only the files we want -->
+  <ItemGroup>
+    <!-- Commands - Parameter Tools -->
+    <Compile Include="Commands\ParameterTools\AddParameterProCommand.cs" />
+    <Compile Include="Commands\ParameterTools\ParameterTransferProCommand.cs" />
+
+    <!-- Commands - Workset Tools -->
+    <Compile Include="Commands\WorksetTools\AssignArchitecturalCommand.cs" />
+    <Compile Include="Commands\WorksetTools\AssignGridsLevelsCommand.cs" />
+    <Compile Include="Commands\WorksetTools\AssignReferencesCommand.cs" />
+    <Compile Include="Commands\WorksetTools\AssignReinforcementCommand.cs" />
+    <Compile Include="Commands\WorksetTools\AssignSteelCommand.cs" />
+    <Compile Include="Commands\WorksetTools\AssignStructuralShellCommand.cs" />
+
+    <!-- Services -->
+    <Compile Include="Services\WorksetService.cs" />
+
+    <!-- Application and Windows -->
+    <Compile Include="BIMKraftRibbonApplication.cs" />
+    <Compile Include="Windows\ParameterManagerWindow.xaml.cs">
+      <DependentUpon>ParameterManagerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ParameterTransferWindow.xaml.cs">
+      <DependentUpon>ParameterTransferWindow.xaml</DependentUpon>
+    </Compile>
+
+    <!-- Models -->
+    <Compile Include="Models\ParameterConfig.cs" />
+    <Compile Include="Models\PresetData.cs" />
+    <Compile Include="Models\ParameterMappingConfig.cs" />
+
+    <!-- Properties -->
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="Windows\ParameterManagerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ParameterTransferWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <!-- Target Framework based on Revit Version -->
+  <PropertyGroup Condition=" '$(RevitVersion)' == '2023' OR '$(RevitVersion)' == '2024' ">
+    <TargetFramework>net48</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RevitVersion)' == '2025' OR '$(RevitVersion)' == '2026' ">
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <DefineConstants>REVIT2025</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Revit API Path based on RevitVersion -->
+  <PropertyGroup Condition=" '$(RevitVersion)' == '2023' ">
+    <RevitAPIPath>C:\Program Files\Autodesk\Revit 2023</RevitAPIPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RevitVersion)' == '2024' ">
+    <RevitAPIPath>C:\Program Files\Autodesk\Revit 2024</RevitAPIPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RevitVersion)' == '2025' ">
+    <RevitAPIPath>C:\Program Files\Autodesk\Revit 2025</RevitAPIPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(RevitVersion)' == '2026' ">
+    <RevitAPIPath>C:\Program Files\Autodesk\Revit 2026</RevitAPIPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="RevitAPI">
+      <HintPath>$(RevitAPIPath)\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>$(RevitAPIPath)\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="BIMKraft.addin" />
+  </ItemGroup>
+
+  <!-- Post-build event to copy files to Revit Addins folder -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\BIMKraft.dll&quot;" ContinueOnError="true" IgnoreExitCode="true" />
+    <Exec Command="copy /Y &quot;$(TargetDir)*.pdb&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\&quot;" ContinueOnError="true" IgnoreExitCode="true" />
+    <Exec Command="copy /Y &quot;$(ProjectDir)BIMKraft.addin&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\&quot;" ContinueOnError="true" IgnoreExitCode="true" />
+  </Target>
+</Project>
