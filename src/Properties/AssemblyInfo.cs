@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("BIM Kraft Parameter Pro")]
 [assembly: AssemblyDescription("Advanced Parameter Manager for Revit with Presets")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Maria Simon")]
+[assembly: AssemblyCompany("BIMKraft.de")]
 [assembly: AssemblyProduct("BIM Kraft Tools")]
 [assembly: AssemblyCopyright("Copyright © Maria Simon 2025 - bimkraft.de")]
 [assembly: AssemblyTrademark("")]

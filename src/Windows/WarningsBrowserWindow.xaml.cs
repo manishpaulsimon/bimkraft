@@ -285,6 +285,9 @@ namespace BIMKraft.Windows
 
         private void PopulateCategoryFilter()
         {
+            // Add "All Categories" as the first item
+            CategoryFilterComboBox.Items.Add(new ComboBoxItem { Content = "All Categories" });
+
             var categories = _warningItems
                 .SelectMany(w => w.Categories.Split(new[] { "; " }, StringSplitOptions.RemoveEmptyEntries))
                 .Distinct()
@@ -295,6 +298,9 @@ namespace BIMKraft.Windows
             {
                 CategoryFilterComboBox.Items.Add(new ComboBoxItem { Content = category });
             }
+
+            // Set the default selection to "All Categories"
+            CategoryFilterComboBox.SelectedIndex = 0;
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)

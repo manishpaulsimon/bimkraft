@@ -154,9 +154,7 @@
                 <StackPanel Grid.Column="1" Margin="10,0">
                     <TextBlock Text="Filter by Category:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                     <ComboBox x:Name="CategoryFilterComboBox" SelectionChanged="CategoryFilter_Changed"
-                              Padding="8,5" Background="White">
-                        <ComboBoxItem Content="All Categories" IsSelected="True"/>
-                    </ComboBox>
+                              Padding="8,5" Background="White"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" VerticalAlignment="Bottom" Orientation="Horizontal">
