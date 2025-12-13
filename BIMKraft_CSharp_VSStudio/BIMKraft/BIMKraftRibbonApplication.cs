@@ -61,6 +61,23 @@ namespace BIMKraft
                     CreateWorksetButtons(worksetPanel, assemblyPath);
                 }
 
+                // Create Quality Tools Panel
+                RibbonPanel qualityPanel;
+                try
+                {
+                    qualityPanel = application.CreateRibbonPanel(tabName, "Quality Tools");
+                }
+                catch
+                {
+                    // Panel might exist, try to get it
+                    qualityPanel = GetRibbonPanel(application, tabName, "Quality Tools");
+                }
+
+                if (qualityPanel != null)
+                {
+                    CreateWarningsBrowserProButton(qualityPanel, assemblyPath);
+                }
+
                 return Result.Succeeded;
             }
             catch (Exception ex)
@@ -207,6 +224,32 @@ namespace BIMKraft
             panel.AddItem(reinforcementButton);
             panel.AddItem(rohbauButton);
             panel.AddItem(steelButton);
+        }
+
+        private void CreateWarningsBrowserProButton(RibbonPanel panel, string assemblyPath)
+        {
+            PushButtonData buttonData = new PushButtonData(
+                "BIMKraftWarningsBrowserPro",
+                "Warnings\nBrowser Pro",
+                assemblyPath,
+                "BIMKraft.Commands.QualityTools.WarningsBrowserProCommand"
+            );
+
+            buttonData.ToolTip = "BIM Kraft Warnings Browser Pro - Advanced Warning Analysis";
+            buttonData.LongDescription =
+                "Browse and analyze Revit warnings with advanced features:\n" +
+                "• View warnings with detailed element information\n" +
+                "• Group similar warnings by occurrence\n" +
+                "• Highlight elements in red with auto-highlighting\n" +
+                "• Save highlights for persistent visibility\n" +
+                "• Zoom to elements in current or best view\n" +
+                "• Create isolated 3D views with crop box\n" +
+                "• Filter by category and search\n" +
+                "• Statistics dashboard\n" +
+                "• Export to HTML or CSV/Excel\n" +
+                "• Expand/collapse warning groups";
+
+            panel.AddItem(buttonData);
         }
     }
 }

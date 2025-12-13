@@ -29,6 +29,9 @@
     <Compile Include="Commands\WorksetTools\AssignSteelCommand.cs" />
     <Compile Include="Commands\WorksetTools\AssignStructuralShellCommand.cs" />
 
+    <!-- Commands - Quality Tools -->
+    <Compile Include="Commands\QualityTools\WarningsBrowserProCommand.cs" />
+
     <!-- Services -->
     <Compile Include="Services\WorksetService.cs" />
 
@@ -40,11 +43,15 @@
     <Compile Include="Windows\ParameterTransferWindow.xaml.cs">
       <DependentUpon>ParameterTransferWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\WarningsBrowserWindow.xaml.cs">
+      <DependentUpon>WarningsBrowserWindow.xaml</DependentUpon>
+    </Compile>
 
     <!-- Models -->
     <Compile Include="Models\ParameterConfig.cs" />
     <Compile Include="Models\PresetData.cs" />
     <Compile Include="Models\ParameterMappingConfig.cs" />
+    <Compile Include="Models\WarningItem.cs" />
 
     <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,6 +63,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\ParameterTransferWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\WarningsBrowserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
