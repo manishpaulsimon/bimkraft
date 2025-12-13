@@ -29,13 +29,16 @@ namespace BIMKraft.Windows
 
         public WarningsBrowserWindow(Document doc, UIDocument uiDoc)
         {
-            InitializeComponent();
+            // Initialize fields BEFORE InitializeComponent to avoid null reference errors
+            // when XAML event handlers are triggered during initialization
             _doc = doc;
             _uiDoc = uiDoc;
             _highlightedElements = new List<ElementId>();
             _savedHighlightedElements = new List<ElementId>();
             _created3DViews = new List<ElementId>();
             _cachedViews = new Dictionary<ViewType, List<View>>();
+
+            InitializeComponent();
 
             InitializeHighlightSettings();
             CacheViews();
@@ -315,6 +318,10 @@ namespace BIMKraft.Windows
 
         private void ApplyFilters()
         {
+            // Ignore if called during initialization
+            if (_warningItems == null || _filteredWarningItems == null)
+                return;
+
             var searchText = SearchTextBox.Text?.ToLower() ?? "";
             var selectedCategory = (CategoryFilterComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
 
@@ -347,6 +354,10 @@ namespace BIMKraft.Windows
 
         private void GroupWarnings_Changed(object sender, RoutedEventArgs e)
         {
+            // Ignore if called during initialization (before LoadWarnings has been called)
+            if (_warningItems == null)
+                return;
+
             LoadWarnings();
             UpdateStatistics();
         }
