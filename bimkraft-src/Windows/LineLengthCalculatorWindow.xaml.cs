@@ -20,6 +20,8 @@ namespace BIMKraft.Windows
         private ObservableCollection<LineLengthItem> _lineGroups;
         private List<ElementId> _selectedElementIds;
         private LineLengthStatistics _statistics;
+        private ExternalEvent _applyColorsEvent;
+        private ApplyColorsHandler _applyColorsHandler;
 
         // Predefined color palette for auto-assignment
         private readonly string[] ColorPalette = new string[]
@@ -38,6 +40,10 @@ namespace BIMKraft.Windows
             _lineGroups = new ObservableCollection<LineLengthItem>();
             _selectedElementIds = new List<ElementId>();
             _statistics = new LineLengthStatistics();
+
+            // Create external event for applying colors
+            _applyColorsHandler = new ApplyColorsHandler();
+            _applyColorsEvent = ExternalEvent.Create(_applyColorsHandler);
 
             LineGroupsDataGrid.ItemsSource = _lineGroups;
         }
@@ -371,49 +377,9 @@ namespace BIMKraft.Windows
         {
             try
             {
-                using (Transaction trans = new Transaction(_doc, "Apply Line Colors"))
-                {
-                    trans.Start();
-
-                    foreach (var group in _lineGroups)
-                    {
-                        // Parse color
-                        System.Windows.Media.Color wpfColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(group.ColorHex);
-                        Autodesk.Revit.DB.Color revitColor = new Autodesk.Revit.DB.Color(wpfColor.R, wpfColor.G, wpfColor.B);
-
-                        // Apply color override to each line in the group
-                        foreach (ElementId id in group.ElementIds)
-                        {
-                            Element line = _doc.GetElement(id);
-                            if (line != null)
-                            {
-                                View ownerView = null;
-
-                                // For detail lines, use their owner view
-                                if (line.OwnerViewId != ElementId.InvalidElementId)
-                                {
-                                    ownerView = _doc.GetElement(line.OwnerViewId) as View;
-                                }
-                                else
-                                {
-                                    ownerView = _doc.ActiveView;
-                                }
-
-                                if (ownerView != null)
-                                {
-                                    OverrideGraphicSettings ogs = new OverrideGraphicSettings();
-                                    ogs.SetProjectionLineColor(revitColor);
-                                    ogs.SetProjectionLineWeight(3); // Make lines slightly thicker
-                                    ownerView.SetElementOverrides(id, ogs);
-                                }
-                            }
-                        }
-                    }
-
-                    trans.Commit();
-                }
-
-                TaskDialog.Show("Success", "Colors applied to line groups successfully!");
+                // Pass data to the handler and raise the external event
+                _applyColorsHandler.SetData(_doc, _lineGroups.ToList());
+                _applyColorsEvent.Raise();
             }
             catch (Exception ex)
             {
@@ -584,6 +550,90 @@ namespace BIMKraft.Windows
         public bool AllowReference(Reference reference, XYZ position)
         {
             return false;
+        }
+    }
+
+    /// <summary>
+    /// External Event Handler for applying colors to line groups
+    /// </summary>
+    public class ApplyColorsHandler : IExternalEventHandler
+    {
+        private Document _doc;
+        private List<LineLengthItem> _lineGroups;
+
+        public void SetData(Document doc, List<LineLengthItem> lineGroups)
+        {
+            _doc = doc;
+            _lineGroups = lineGroups;
+        }
+
+        public void Execute(UIApplication app)
+        {
+            try
+            {
+                if (_doc == null || _lineGroups == null || _lineGroups.Count == 0)
+                {
+                    TaskDialog.Show("Error", "No data available to apply colors.");
+                    return;
+                }
+
+                using (Transaction trans = new Transaction(_doc, "Apply Line Colors"))
+                {
+                    trans.Start();
+
+                    foreach (var group in _lineGroups)
+                    {
+                        // Parse color
+                        System.Windows.Media.Color wpfColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(group.ColorHex);
+                        Autodesk.Revit.DB.Color revitColor = new Autodesk.Revit.DB.Color(wpfColor.R, wpfColor.G, wpfColor.B);
+
+                        // Apply color override to each line in the group
+                        foreach (ElementId id in group.ElementIds)
+                        {
+                            Element line = _doc.GetElement(id);
+                            if (line != null)
+                            {
+                                View ownerView = null;
+
+                                // For detail lines, use their owner view
+#if REVIT2025
+                                if (line.OwnerViewId != ElementId.InvalidElementId)
+#else
+                                if (line.OwnerViewId != ElementId.InvalidElementId)
+#endif
+                                {
+                                    ownerView = _doc.GetElement(line.OwnerViewId) as View;
+                                }
+                                else
+                                {
+                                    ownerView = _doc.ActiveView;
+                                }
+
+                                if (ownerView != null)
+                                {
+                                    OverrideGraphicSettings ogs = new OverrideGraphicSettings();
+                                    ogs.SetProjectionLineColor(revitColor);
+                                    ogs.SetProjectionLineWeight(3); // Make lines slightly thicker
+                                    ownerView.SetElementOverrides(id, ogs);
+                                }
+                            }
+                        }
+                    }
+
+                    trans.Commit();
+                }
+
+                TaskDialog.Show("Success", "Colors applied to line groups successfully!");
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", $"Error applying colors:\n{ex.Message}");
+            }
+        }
+
+        public string GetName()
+        {
+            return "Apply Line Colors";
         }
     }
 }
