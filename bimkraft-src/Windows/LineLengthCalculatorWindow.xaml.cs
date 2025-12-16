@@ -53,6 +53,16 @@ namespace BIMKraft.Windows
             // Window is loaded and ready
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Dispose of the external event to prevent crashes
+            if (_applyColorsEvent != null)
+            {
+                _applyColorsEvent.Dispose();
+                _applyColorsEvent = null;
+            }
+        }
+
         private void SelectLines_Click(object sender, RoutedEventArgs e)
         {
             try
