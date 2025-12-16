@@ -32,6 +32,9 @@
     <!-- Commands - Quality Tools -->
     <Compile Include="Commands\QualityTools\WarningsBrowserProCommand.cs" />
 
+    <!-- Commands - Measurement Tools -->
+    <Compile Include="Commands\MeasurementTools\LineLengthCalculatorCommand.cs" />
+
     <!-- Services -->
     <Compile Include="Services\WorksetService.cs" />
 
@@ -46,12 +49,16 @@
     <Compile Include="Windows\WarningsBrowserWindow.xaml.cs">
       <DependentUpon>WarningsBrowserWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\LineLengthCalculatorWindow.xaml.cs">
+      <DependentUpon>LineLengthCalculatorWindow.xaml</DependentUpon>
+    </Compile>
 
     <!-- Models -->
     <Compile Include="Models\ParameterConfig.cs" />
     <Compile Include="Models\PresetData.cs" />
     <Compile Include="Models\ParameterMappingConfig.cs" />
     <Compile Include="Models\WarningItem.cs" />
+    <Compile Include="Models\LineLengthItem.cs" />
 
     <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,6 +74,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\WarningsBrowserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\LineLengthCalculatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

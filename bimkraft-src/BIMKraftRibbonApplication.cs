@@ -78,6 +78,23 @@ namespace BIMKraft
                     CreateWarningsBrowserProButton(qualityPanel, assemblyPath);
                 }
 
+                // Create Measurement Tools Panel
+                RibbonPanel measurementPanel;
+                try
+                {
+                    measurementPanel = application.CreateRibbonPanel(tabName, "Measurement Tools");
+                }
+                catch
+                {
+                    // Panel might exist, try to get it
+                    measurementPanel = GetRibbonPanel(application, tabName, "Measurement Tools");
+                }
+
+                if (measurementPanel != null)
+                {
+                    CreateLineLengthCalculatorButton(measurementPanel, assemblyPath);
+                }
+
                 return Result.Succeeded;
             }
             catch (Exception ex)
@@ -248,6 +265,32 @@ namespace BIMKraft
                 "• Statistics dashboard\n" +
                 "• Export to HTML or CSV/Excel\n" +
                 "• Expand/collapse warning groups";
+
+            panel.AddItem(buttonData);
+        }
+
+        private void CreateLineLengthCalculatorButton(RibbonPanel panel, string assemblyPath)
+        {
+            PushButtonData buttonData = new PushButtonData(
+                "BIMKraftLineLengthCalculator",
+                "Line Length\nCalculator",
+                assemblyPath,
+                "BIMKraft.Commands.MeasurementTools.LineLengthCalculatorCommand"
+            );
+
+            buttonData.ToolTip = "BIM Kraft Line Length Calculator - Calculate Connected Line Lengths";
+            buttonData.LongDescription =
+                "Calculate total length of connected Detail Lines and Model Lines:\n" +
+                "• Select specific lines or calculate all in view\n" +
+                "• Auto-detect connected lines by endpoint and style\n" +
+                "• Group connected lines and calculate total lengths\n" +
+                "• Assign colors to line groups automatically\n" +
+                "• Modify colors in UI table\n" +
+                "• Apply colors to lines in Revit\n" +
+                "• Export to Excel or CSV\n" +
+                "• Copy data to clipboard\n" +
+                "• Zoom to selected line groups\n" +
+                "• Statistics dashboard";
 
             panel.AddItem(buttonData);
         }

@@ -89,4 +89,6 @@ echo Tools available in BIMKraft tab:
 echo   - Parameter Pro (Parameter Tools panel)
 echo   - Parameter Transfer Pro (Parameter Tools panel)
 echo   - Workset Tools (Workset Tools panel)
+echo   - Warnings Browser Pro (Quality Tools panel)
+echo   - Line Length Calculator (Measurement Tools panel)
 pause
