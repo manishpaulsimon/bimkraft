@@ -37,6 +37,7 @@
 
     <!-- Services -->
     <Compile Include="Services\WorksetService.cs" />
+    <Compile Include="Services\LineColorStorageService.cs" />
 
     <!-- Application and Windows -->
     <Compile Include="BIMKraftRibbonApplication.cs" />

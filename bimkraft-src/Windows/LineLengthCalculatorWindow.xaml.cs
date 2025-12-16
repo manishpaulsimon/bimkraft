@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BIMKraft.Models;
+using BIMKraft.Services;
 using Microsoft.Win32;
 using System.IO;
 
@@ -56,10 +57,18 @@ namespace BIMKraft.Windows
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Dispose of the external event to prevent crashes
-            if (_applyColorsEvent != null)
+            try
             {
-                _applyColorsEvent.Dispose();
-                _applyColorsEvent = null;
+                if (_applyColorsEvent != null)
+                {
+                    _applyColorsEvent.Dispose();
+                    _applyColorsEvent = null;
+                }
+                _applyColorsHandler = null;
+            }
+            catch
+            {
+                // Ignore any errors during disposal
             }
         }
 
@@ -360,10 +369,57 @@ namespace BIMKraft.Windows
 
         private void AssignColors(List<LineLengthItem> groups)
         {
+            int paletteIndex = 0;
+
             for (int i = 0; i < groups.Count; i++)
             {
-                groups[i].ColorHex = ColorPalette[i % ColorPalette.Length];
+                // Try to restore color from extensible storage
+                string storedColor = TryGetGroupStoredColor(groups[i]);
+
+                if (!string.IsNullOrEmpty(storedColor))
+                {
+                    // Use the stored color
+                    groups[i].ColorHex = storedColor;
+                }
+                else
+                {
+                    // Assign a new color from the palette
+                    groups[i].ColorHex = ColorPalette[paletteIndex % ColorPalette.Length];
+                    paletteIndex++;
+                }
             }
+        }
+
+        /// <summary>
+        /// Tries to get a consistent stored color for all lines in a group
+        /// </summary>
+        private string TryGetGroupStoredColor(LineLengthItem group)
+        {
+            if (group == null || group.ElementIds == null || group.ElementIds.Count == 0)
+                return null;
+
+            string firstColor = null;
+
+            foreach (ElementId id in group.ElementIds)
+            {
+                Element line = _doc.GetElement(id);
+                if (line == null)
+                    continue;
+
+                string storedColor = LineColorStorageService.GetStoredColor(line);
+
+                if (firstColor == null)
+                {
+                    firstColor = storedColor;
+                }
+                else if (firstColor != storedColor)
+                {
+                    // Lines in group have different stored colors, don't use any
+                    return null;
+                }
+            }
+
+            return firstColor;
         }
 
         private void UpdateStatistics()
@@ -542,8 +598,15 @@ namespace BIMKraft.Windows
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
-            Close();
+            try
+            {
+                Close();
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't show to user
+                System.Diagnostics.Debug.WriteLine($"Error closing window: {ex.Message}");
+            }
         }
     }
 
@@ -626,6 +689,9 @@ namespace BIMKraft.Windows
                                     ogs.SetProjectionLineWeight(3); // Make lines slightly thicker
                                     ownerView.SetElementOverrides(id, ogs);
                                 }
+
+                                // Store the color in extensible storage for persistence
+                                LineColorStorageService.StoreColor(line, group.ColorHex);
                             }
                         }
                     }
@@ -633,7 +699,9 @@ namespace BIMKraft.Windows
                     trans.Commit();
                 }
 
-                TaskDialog.Show("Success", "Colors applied to line groups successfully!");
+                TaskDialog.Show("Success",
+                    "Colors applied to line groups successfully!\n\n" +
+                    "The color assignments have been saved and will be restored when you reopen this tool.");
             }
             catch (Exception ex)
             {
