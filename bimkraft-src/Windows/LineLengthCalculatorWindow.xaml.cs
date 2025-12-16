@@ -333,7 +333,11 @@ namespace BIMKraft.Windows
             }
 
             // Create element IDs string
+#if REVIT2025
+            item.ElementIdsString = string.Join(", ", item.ElementIds.Select(id => id.Value.ToString()));
+#else
             item.ElementIdsString = string.Join(", ", item.ElementIds.Select(id => id.IntegerValue.ToString()));
+#endif
 
             return item;
         }
