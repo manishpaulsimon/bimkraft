@@ -201,6 +201,11 @@
                     <Button Content="Calculate"
                             Click="Calculate_Click"
                             Style="{StaticResource PrimaryButtonStyle}"/>
+                    <Button Content="Create Groups"
+                            x:Name="CreateGroupsButton"
+                            Click="CreateGroups_Click"
+                            Style="{StaticResource SuccessButtonStyle}"
+                            IsEnabled="False"/>
                     <Button Content="Apply Colors"
                             x:Name="ApplyColorsButton"
                             Click="ApplyColors_Click"
@@ -242,6 +247,7 @@
                         <DataGridTextColumn Header="Line Style" Binding="{Binding LineStyle}" Width="150" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Line Type" Binding="{Binding LineType}" Width="120" IsReadOnly="True"/>
                         <DataGridTextColumn Header="View" Binding="{Binding ViewName}" Width="150" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Group Status" Binding="{Binding GroupStatus}" Width="120" IsReadOnly="True"/>
                         <DataGridTemplateColumn Header="Color" Width="150">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>

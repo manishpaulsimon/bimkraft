@@ -15,11 +15,28 @@ namespace BIMKraft.Models
         private string _colorHex;
         private SolidColorBrush _colorBrush;
         private string _description;
+        private string _groupStatus;
 
         /// <summary>
         /// Unique identifier for this line group
         /// </summary>
         public int GroupId { get; set; }
+
+        /// <summary>
+        /// Status of Revit group creation
+        /// </summary>
+        public string GroupStatus
+        {
+            get => _groupStatus;
+            set
+            {
+                if (_groupStatus != value)
+                {
+                    _groupStatus = value;
+                    OnPropertyChanged(nameof(GroupStatus));
+                }
+            }
+        }
 
         /// <summary>
         /// User-defined description/name for this line group
@@ -134,6 +151,7 @@ namespace BIMKraft.Models
             LineType = "Unknown";
             ViewName = "N/A";
             Description = "";
+            GroupStatus = "Not Grouped";
         }
 
         private void UpdateColorBrush()

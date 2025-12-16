@@ -23,6 +23,8 @@ namespace BIMKraft.Windows
         private LineLengthStatistics _statistics;
         private ExternalEvent _applyColorsEvent;
         private ApplyColorsHandler _applyColorsHandler;
+        private ExternalEvent _createGroupsEvent;
+        private CreateGroupsHandler _createGroupsHandler;
 
         // Predefined color palette for auto-assignment
         private readonly string[] ColorPalette = new string[]
@@ -46,6 +48,10 @@ namespace BIMKraft.Windows
             _applyColorsHandler = new ApplyColorsHandler();
             _applyColorsEvent = ExternalEvent.Create(_applyColorsHandler);
 
+            // Create external event for creating groups
+            _createGroupsHandler = new CreateGroupsHandler();
+            _createGroupsEvent = ExternalEvent.Create(_createGroupsHandler);
+
             LineGroupsDataGrid.ItemsSource = _lineGroups;
         }
 
@@ -64,7 +70,7 @@ namespace BIMKraft.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            // Dispose of the external event to prevent crashes
+            // Dispose of the external events to prevent crashes
             try
             {
                 if (_applyColorsEvent != null)
@@ -73,6 +79,13 @@ namespace BIMKraft.Windows
                     _applyColorsEvent = null;
                 }
                 _applyColorsHandler = null;
+
+                if (_createGroupsEvent != null)
+                {
+                    _createGroupsEvent.Dispose();
+                    _createGroupsEvent = null;
+                }
+                _createGroupsHandler = null;
             }
             catch
             {
@@ -167,6 +180,7 @@ namespace BIMKraft.Windows
                 ExportCSVButton.IsEnabled = true;
                 CopyButton.IsEnabled = true;
                 ApplyColorsButton.IsEnabled = true;
+                CreateGroupsButton.IsEnabled = true;
                 SavePresetButton.IsEnabled = true;
 
                 TaskDialog.Show("Calculation Complete",
@@ -512,6 +526,34 @@ namespace BIMKraft.Windows
             catch (Exception ex)
             {
                 TaskDialog.Show("Error", $"Error applying colors:\n{ex.Message}");
+            }
+        }
+
+        private void CreateGroups_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Check if descriptions are provided
+                bool hasEmptyDescriptions = _lineGroups.Any(g => string.IsNullOrWhiteSpace(g.Description));
+                if (hasEmptyDescriptions)
+                {
+                    var result = TaskDialog.Show("Missing Descriptions",
+                        "Some line groups don't have descriptions.\n\n" +
+                        "The Description field will be used as the group name.\n\n" +
+                        "Do you want to continue anyway? Groups without descriptions will be named automatically.",
+                        TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No);
+
+                    if (result != TaskDialogResult.Yes)
+                        return;
+                }
+
+                // Pass data to the handler and raise the external event
+                _createGroupsHandler.SetData(_doc, _lineGroups.ToList());
+                _createGroupsEvent.Raise();
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", $"Error creating groups:\n{ex.Message}");
             }
         }
 
@@ -905,8 +947,11 @@ namespace BIMKraft.Windows
 
                 UseSelectionCheckBox.IsChecked = true;
 
+                // Automatically calculate and populate the table
+                Calculate_Click(null, null);
+
                 TaskDialog.Show("Selection Restored",
-                    $"Restored {_selectedElementIds.Count} previously selected line(s).");
+                    $"Restored {_selectedElementIds.Count} previously selected line(s) and populated the table.");
             }
             catch (Exception ex)
             {
@@ -1082,6 +1127,136 @@ namespace BIMKraft.Windows
         public string GetName()
         {
             return "Apply Line Colors";
+        }
+    }
+
+    /// <summary>
+    /// External Event Handler for creating Revit groups from line groups
+    /// </summary>
+    public class CreateGroupsHandler : IExternalEventHandler
+    {
+        private Document _doc;
+        private List<LineLengthItem> _lineGroups;
+
+        public void SetData(Document doc, List<LineLengthItem> lineGroups)
+        {
+            _doc = doc;
+            _lineGroups = lineGroups;
+        }
+
+        public void Execute(UIApplication app)
+        {
+            try
+            {
+                if (_doc == null || _lineGroups == null || _lineGroups.Count == 0)
+                {
+                    TaskDialog.Show("Error", "No data available to create groups.");
+                    return;
+                }
+
+                using (Transaction trans = new Transaction(_doc, "Create Line Groups"))
+                {
+                    trans.Start();
+
+                    int successCount = 0;
+                    int failCount = 0;
+                    StringBuilder errors = new StringBuilder();
+
+                    foreach (var group in _lineGroups)
+                    {
+                        try
+                        {
+                            // Skip if already grouped
+                            if (!string.IsNullOrWhiteSpace(group.GroupStatus) && group.GroupStatus != "Not Grouped")
+                            {
+                                continue;
+                            }
+
+                            // Validate elements exist
+                            List<ElementId> validIds = new List<ElementId>();
+                            foreach (ElementId id in group.ElementIds)
+                            {
+                                Element elem = _doc.GetElement(id);
+                                if (elem != null && elem.IsValidObject)
+                                {
+                                    validIds.Add(id);
+                                }
+                            }
+
+                            if (validIds.Count == 0)
+                            {
+                                group.GroupStatus = "Error: No valid elements";
+                                failCount++;
+                                continue;
+                            }
+
+                            // Determine group name
+                            string groupName = string.IsNullOrWhiteSpace(group.Description)
+                                ? $"Line Group {group.GroupId}"
+                                : group.Description;
+
+                            // Create the group
+                            Group newGroup = _doc.Create.NewGroup(group.ElementIds);
+
+                            if (newGroup != null)
+                            {
+                                // Set the group name
+                                newGroup.GroupType.Name = groupName;
+
+                                // Update status based on group type
+                                if (group.LineType == "Detail Line")
+                                {
+                                    group.GroupStatus = $"Detail Group: {groupName}";
+                                }
+                                else if (group.LineType == "Model Line")
+                                {
+                                    group.GroupStatus = $"Model Group: {groupName}";
+                                }
+                                else
+                                {
+                                    group.GroupStatus = $"Grouped: {groupName}";
+                                }
+
+                                successCount++;
+                            }
+                            else
+                            {
+                                group.GroupStatus = "Error: Group creation failed";
+                                failCount++;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            group.GroupStatus = "Error: " + ex.Message.Substring(0, Math.Min(50, ex.Message.Length));
+                            failCount++;
+                            errors.AppendLine($"Group {group.GroupId}: {ex.Message}");
+                        }
+                    }
+
+                    trans.Commit();
+
+                    // Show summary
+                    string message = $"Group creation complete!\n\n" +
+                                   $"Successfully created: {successCount} group(s)\n" +
+                                   $"Failed: {failCount} group(s)";
+
+                    if (errors.Length > 0)
+                    {
+                        message += $"\n\nErrors:\n{errors}";
+                    }
+
+                    TaskDialog.Show("Create Groups", message);
+                }
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", $"Error creating groups:\n{ex.Message}\n\n{ex.StackTrace}");
+            }
+        }
+
+        public string GetName()
+        {
+            return "Create Line Groups";
         }
     }
 }
