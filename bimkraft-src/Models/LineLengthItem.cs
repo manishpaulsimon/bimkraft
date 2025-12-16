@@ -14,11 +14,28 @@ namespace BIMKraft.Models
         private bool _isSelected;
         private string _colorHex;
         private SolidColorBrush _colorBrush;
+        private string _description;
 
         /// <summary>
         /// Unique identifier for this line group
         /// </summary>
         public int GroupId { get; set; }
+
+        /// <summary>
+        /// User-defined description/name for this line group
+        /// </summary>
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                if (_description != value)
+                {
+                    _description = value;
+                    OnPropertyChanged(nameof(Description));
+                }
+            }
+        }
 
         /// <summary>
         /// Number of connected lines in this group
@@ -116,6 +133,7 @@ namespace BIMKraft.Models
             LineStyle = "Unknown";
             LineType = "Unknown";
             ViewName = "N/A";
+            Description = "";
         }
 
         private void UpdateColorBrush()

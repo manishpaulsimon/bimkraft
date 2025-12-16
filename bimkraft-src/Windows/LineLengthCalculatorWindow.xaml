@@ -162,6 +162,39 @@
                             Click="SelectLines_Click"
                             Style="{StaticResource SecondaryButtonStyle}"
                             VerticalAlignment="Center"/>
+                    <Button Content="Restore Selection"
+                            x:Name="RestoreSelectionButton"
+                            Click="RestoreSelection_Click"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            VerticalAlignment="Center"
+                            IsEnabled="False"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Presets:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                    <ComboBox x:Name="PresetsComboBox"
+                              Width="150"
+                              VerticalAlignment="Center"
+                              SelectionChanged="PresetsComboBox_SelectionChanged"/>
+                    <Button Content="Load"
+                            Click="LoadPreset_Click"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            VerticalAlignment="Center"
+                            Margin="5,0"
+                            x:Name="LoadPresetButton"
+                            IsEnabled="False"/>
+                    <Button Content="Save"
+                            Click="SavePreset_Click"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            VerticalAlignment="Center"
+                            x:Name="SavePresetButton"
+                            IsEnabled="False"/>
+                    <Button Content="Delete"
+                            Click="DeletePreset_Click"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            VerticalAlignment="Center"
+                            x:Name="DeletePresetButton"
+                            IsEnabled="False"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -203,6 +236,7 @@
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn Header="Select" Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
                         <DataGridTextColumn Header="Group ID" Binding="{Binding GroupId}" Width="80" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
                         <DataGridTextColumn Header="Line Count" Binding="{Binding LineCount}" Width="100" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Total Length" Binding="{Binding TotalLengthFormatted}" Width="120" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Line Style" Binding="{Binding LineStyle}" Width="150" IsReadOnly="True"/>

@@ -12,6 +12,7 @@ namespace BIMKraft.Services
         private static readonly Guid SchemaGuid = new Guid("A7B8C9D0-E1F2-4A5B-9C8D-7E6F5A4B3C2D");
         private const string SchemaName = "BIMKraftLineColorData";
         private const string ColorFieldName = "AssignedColor";
+        private const string DescriptionFieldName = "Description";
 
         /// <summary>
         /// Gets or creates the schema for storing line color data
@@ -32,10 +33,34 @@ namespace BIMKraft.Services
                 FieldBuilder colorField = schemaBuilder.AddSimpleField(ColorFieldName, typeof(string));
                 colorField.SetDocumentation("The assigned color in hex format (e.g., #FF5733)");
 
+                // Add field for description
+                FieldBuilder descriptionField = schemaBuilder.AddSimpleField(DescriptionFieldName, typeof(string));
+                descriptionField.SetDocumentation("User-defined description for the line group");
+
                 schema = schemaBuilder.Finish();
             }
 
             return schema;
+        }
+
+        /// <summary>
+        /// Stores a color and description for a line element
+        /// </summary>
+        public static void StoreColorAndDescription(Element element, string colorHex, string description)
+        {
+            if (element == null)
+                return;
+
+            Schema schema = GetOrCreateSchema();
+            Entity entity = new Entity(schema);
+
+            if (!string.IsNullOrEmpty(colorHex))
+                entity.Set(ColorFieldName, colorHex);
+
+            if (!string.IsNullOrEmpty(description))
+                entity.Set(DescriptionFieldName, description ?? "");
+
+            element.SetEntity(entity);
         }
 
         /// <summary>
@@ -47,8 +72,23 @@ namespace BIMKraft.Services
                 return;
 
             Schema schema = GetOrCreateSchema();
+
+            // Get existing entity to preserve description if it exists
+            Entity existingEntity = element.GetEntity(schema);
+            string existingDescription = "";
+
+            if (existingEntity != null && existingEntity.IsValid())
+            {
+                try
+                {
+                    existingDescription = existingEntity.Get<string>(DescriptionFieldName) ?? "";
+                }
+                catch { }
+            }
+
             Entity entity = new Entity(schema);
             entity.Set(ColorFieldName, colorHex);
+            entity.Set(DescriptionFieldName, existingDescription);
 
             element.SetEntity(entity);
         }
@@ -86,6 +126,32 @@ namespace BIMKraft.Services
         public static bool HasStoredColor(Element element)
         {
             return !string.IsNullOrEmpty(GetStoredColor(element));
+        }
+
+        /// <summary>
+        /// Retrieves the stored description for a line element
+        /// </summary>
+        public static string GetStoredDescription(Element element)
+        {
+            if (element == null)
+                return null;
+
+            Schema schema = Schema.Lookup(SchemaGuid);
+            if (schema == null)
+                return null;
+
+            Entity entity = element.GetEntity(schema);
+            if (entity == null || !entity.IsValid())
+                return null;
+
+            try
+            {
+                return entity.Get<string>(DescriptionFieldName);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>

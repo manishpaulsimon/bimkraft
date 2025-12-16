@@ -51,7 +51,15 @@ namespace BIMKraft.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // Window is loaded and ready
+            // Load available presets
+            LoadPresetsList();
+
+            // Check if there's a previous selection to restore
+            var lastSelection = LineLengthPresetService.LoadLastSelection();
+            if (lastSelection != null && lastSelection.Count > 0)
+            {
+                RestoreSelectionButton.IsEnabled = true;
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -92,7 +100,17 @@ namespace BIMKraft.Windows
 
                 UseSelectionCheckBox.IsChecked = _selectedElementIds.Count > 0;
 
+                // Save the selection for later restoration
+#if REVIT2025
+                LineLengthPresetService.SaveLastSelection(_selectedElementIds.Select(id => (int)id.Value).ToList());
+#else
+                LineLengthPresetService.SaveLastSelection(_selectedElementIds.Select(id => id.IntegerValue).ToList());
+#endif
+                RestoreSelectionButton.IsEnabled = true;
+
                 Show();
+                Activate(); // Fix: Bring window back to focus
+                Focus();
 
                 TaskDialog.Show("Selection Complete",
                     $"{_selectedElementIds.Count} line(s) selected.");
@@ -100,10 +118,14 @@ namespace BIMKraft.Windows
             catch (Autodesk.Revit.Exceptions.OperationCanceledException)
             {
                 Show();
+                Activate(); // Fix: Bring window back to focus
+                Focus();
             }
             catch (Exception ex)
             {
                 Show();
+                Activate(); // Fix: Bring window back to focus
+                Focus();
                 TaskDialog.Show("Error", $"Error selecting lines:\n{ex.Message}");
             }
         }
@@ -145,6 +167,7 @@ namespace BIMKraft.Windows
                 ExportCSVButton.IsEnabled = true;
                 CopyButton.IsEnabled = true;
                 ApplyColorsButton.IsEnabled = true;
+                SavePresetButton.IsEnabled = true;
 
                 TaskDialog.Show("Calculation Complete",
                     $"Found {_lineGroups.Count} connected line group(s) with a total of {_statistics.TotalLines} line(s).");
@@ -387,6 +410,13 @@ namespace BIMKraft.Windows
                     groups[i].ColorHex = ColorPalette[paletteIndex % ColorPalette.Length];
                     paletteIndex++;
                 }
+
+                // Try to restore description from extensible storage
+                string storedDescription = TryGetGroupStoredDescription(groups[i]);
+                if (!string.IsNullOrEmpty(storedDescription))
+                {
+                    groups[i].Description = storedDescription;
+                }
             }
         }
 
@@ -420,6 +450,38 @@ namespace BIMKraft.Windows
             }
 
             return firstColor;
+        }
+
+        /// <summary>
+        /// Tries to get a consistent stored description for all lines in a group
+        /// </summary>
+        private string TryGetGroupStoredDescription(LineLengthItem group)
+        {
+            if (group == null || group.ElementIds == null || group.ElementIds.Count == 0)
+                return null;
+
+            string firstDescription = null;
+
+            foreach (ElementId id in group.ElementIds)
+            {
+                Element line = _doc.GetElement(id);
+                if (line == null)
+                    continue;
+
+                string storedDescription = LineColorStorageService.GetStoredDescription(line);
+
+                if (firstDescription == null)
+                {
+                    firstDescription = storedDescription;
+                }
+                else if (firstDescription != storedDescription)
+                {
+                    // Lines in group have different stored descriptions, don't use any
+                    return null;
+                }
+            }
+
+            return firstDescription;
         }
 
         private void UpdateStatistics()
@@ -608,6 +670,314 @@ namespace BIMKraft.Windows
                 System.Diagnostics.Debug.WriteLine($"Error closing window: {ex.Message}");
             }
         }
+
+        #region Preset Management
+
+        private void LoadPresetsList()
+        {
+            var presetNames = LineLengthPresetService.GetPresetNames();
+            PresetsComboBox.ItemsSource = presetNames;
+
+            if (presetNames.Count > 0)
+            {
+                PresetsComboBox.SelectedIndex = 0;
+            }
+        }
+
+        private void PresetsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            LoadPresetButton.IsEnabled = PresetsComboBox.SelectedItem != null;
+            DeletePresetButton.IsEnabled = PresetsComboBox.SelectedItem != null;
+        }
+
+        private void SavePreset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Prompt for preset name using simple window
+                var inputWindow = new Window
+                {
+                    Title = "Save Preset",
+                    Width = 400,
+                    Height = 150,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Owner = this,
+                    ResizeMode = ResizeMode.NoResize
+                };
+
+                var grid = new System.Windows.Controls.Grid();
+                grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                var stackPanel = new StackPanel { Margin = new Thickness(20) };
+                stackPanel.Children.Add(new TextBlock { Text = "Enter a name for this preset:", Margin = new Thickness(0, 0, 0, 10) });
+                var textBox = new System.Windows.Controls.TextBox { Text = "My Preset", Padding = new Thickness(5) };
+                stackPanel.Children.Add(textBox);
+                System.Windows.Controls.Grid.SetRow(stackPanel, 0);
+                grid.Children.Add(stackPanel);
+
+                var buttonPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(20, 10, 20, 10) };
+                var okButton = new System.Windows.Controls.Button { Content = "OK", Width = 75, Margin = new Thickness(5, 0, 5, 0), IsDefault = true };
+                var cancelButton = new System.Windows.Controls.Button { Content = "Cancel", Width = 75, Margin = new Thickness(5, 0, 5, 0), IsCancel = true };
+                okButton.Click += (s, args) => { inputWindow.DialogResult = true; inputWindow.Close(); };
+                cancelButton.Click += (s, args) => { inputWindow.DialogResult = false; inputWindow.Close(); };
+                buttonPanel.Children.Add(okButton);
+                buttonPanel.Children.Add(cancelButton);
+                System.Windows.Controls.Grid.SetRow(buttonPanel, 1);
+                grid.Children.Add(buttonPanel);
+
+                inputWindow.Content = grid;
+
+                if (inputWindow.ShowDialog() != true || string.IsNullOrWhiteSpace(textBox.Text))
+                    return;
+
+                string presetName = textBox.Text.Trim();
+
+                // Check if preset already exists
+                if (LineLengthPresetService.PresetExists(presetName))
+                {
+                    var result = TaskDialog.Show("Overwrite Preset",
+                        $"A preset named '{presetName}' already exists.\n\nDo you want to overwrite it?",
+                        TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No);
+
+                    if (result != TaskDialogResult.Yes)
+                        return;
+                }
+
+                // Create preset from current data
+                var preset = new LineLengthPreset
+                {
+                    Name = presetName,
+                    CreatedDate = DateTime.Now
+                };
+
+                // Save line groups
+                foreach (var group in _lineGroups)
+                {
+                    var presetGroup = new PresetLineGroup
+                    {
+#if REVIT2025
+                        ElementIds = group.ElementIds.Select(id => (int)id.Value).ToList(),
+#else
+                        ElementIds = group.ElementIds.Select(id => id.IntegerValue).ToList(),
+#endif
+                        Description = group.Description ?? "",
+                        ColorHex = group.ColorHex
+                    };
+                    preset.LineGroups.Add(presetGroup);
+                }
+
+                // Save selected element IDs
+#if REVIT2025
+                preset.SelectedElementIds = _selectedElementIds.Select(id => (int)id.Value).ToList();
+#else
+                preset.SelectedElementIds = _selectedElementIds.Select(id => id.IntegerValue).ToList();
+#endif
+
+                LineLengthPresetService.SavePreset(preset);
+                LoadPresetsList();
+                SavePresetButton.IsEnabled = true;
+
+                TaskDialog.Show("Success", $"Preset '{presetName}' saved successfully!");
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", $"Error saving preset:\n{ex.Message}");
+            }
+        }
+
+        private void LoadPreset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string presetName = PresetsComboBox.SelectedItem as string;
+                if (string.IsNullOrEmpty(presetName))
+                    return;
+
+                var preset = LineLengthPresetService.LoadPreset(presetName);
+                if (preset == null)
+                {
+                    TaskDialog.Show("Error", $"Preset '{presetName}' not found.");
+                    return;
+                }
+
+                // Clear current data
+                _lineGroups.Clear();
+                _selectedElementIds.Clear();
+
+                // Load selected element IDs
+                foreach (int idValue in preset.SelectedElementIds)
+                {
+#if REVIT2025
+                    _selectedElementIds.Add(new ElementId(idValue));
+#else
+                    _selectedElementIds.Add(new ElementId(idValue));
+#endif
+                }
+
+                // Load line groups
+                int groupId = 1;
+                foreach (var presetGroup in preset.LineGroups)
+                {
+                    var group = new LineLengthItem
+                    {
+                        GroupId = groupId++,
+                        Description = presetGroup.Description,
+                        ColorHex = presetGroup.ColorHex
+                    };
+
+                    foreach (int idValue in presetGroup.ElementIds)
+                    {
+#if REVIT2025
+                        group.ElementIds.Add(new ElementId(idValue));
+#else
+                        group.ElementIds.Add(new ElementId(idValue));
+#endif
+                    }
+
+                    // Recalculate properties for this group
+                    RecalculateGroupProperties(group);
+                    _lineGroups.Add(group);
+                }
+
+                UpdateStatistics();
+                UseSelectionCheckBox.IsChecked = _selectedElementIds.Count > 0;
+                ExportExcelButton.IsEnabled = true;
+                ExportCSVButton.IsEnabled = true;
+                CopyButton.IsEnabled = true;
+                ApplyColorsButton.IsEnabled = true;
+                SavePresetButton.IsEnabled = true;
+
+                TaskDialog.Show("Success", $"Preset '{presetName}' loaded successfully!");
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", $"Error loading preset:\n{ex.Message}");
+            }
+        }
+
+        private void DeletePreset_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string presetName = PresetsComboBox.SelectedItem as string;
+                if (string.IsNullOrEmpty(presetName))
+                    return;
+
+                var result = TaskDialog.Show("Delete Preset",
+                    $"Are you sure you want to delete the preset '{presetName}'?",
+                    TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No);
+
+                if (result != TaskDialogResult.Yes)
+                    return;
+
+                LineLengthPresetService.DeletePreset(presetName);
+                LoadPresetsList();
+
+                TaskDialog.Show("Success", $"Preset '{presetName}' deleted successfully!");
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", $"Error deleting preset:\n{ex.Message}");
+            }
+        }
+
+        private void RestoreSelection_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var lastSelection = LineLengthPresetService.LoadLastSelection();
+                if (lastSelection == null || lastSelection.Count == 0)
+                {
+                    TaskDialog.Show("No Selection", "No previous selection found to restore.");
+                    return;
+                }
+
+                _selectedElementIds.Clear();
+                foreach (int idValue in lastSelection)
+                {
+#if REVIT2025
+                    _selectedElementIds.Add(new ElementId(idValue));
+#else
+                    _selectedElementIds.Add(new ElementId(idValue));
+#endif
+                }
+
+                UseSelectionCheckBox.IsChecked = true;
+
+                TaskDialog.Show("Selection Restored",
+                    $"Restored {_selectedElementIds.Count} previously selected line(s).");
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", $"Error restoring selection:\n{ex.Message}");
+            }
+        }
+
+        private void RecalculateGroupProperties(LineLengthItem group)
+        {
+            // Recalculate total length and other properties
+            double totalLength = 0;
+            group.LineCount = group.ElementIds.Count;
+
+            Element firstLine = null;
+            foreach (ElementId id in group.ElementIds)
+            {
+                Element line = _doc.GetElement(id);
+                if (line != null)
+                {
+                    if (firstLine == null)
+                        firstLine = line;
+
+                    Curve curve = GetCurve(line);
+                    if (curve != null)
+                    {
+#if REVIT2025
+                        totalLength += UnitUtils.ConvertFromInternalUnits(curve.Length, UnitTypeId.Meters);
+#else
+                        totalLength += UnitUtils.ConvertFromInternalUnits(curve.Length, DisplayUnitType.DUT_METERS);
+#endif
+                    }
+                }
+            }
+
+            group.TotalLength = totalLength;
+            group.TotalLengthFormatted = $"{totalLength:F2} m";
+
+            if (firstLine != null)
+            {
+                GraphicsStyle gs = GetGraphicsStyle(firstLine);
+                group.LineStyle = gs != null ? gs.Name : "Unknown";
+
+                if (firstLine is DetailLine || firstLine is DetailCurve)
+                {
+                    group.LineType = "Detail Line";
+#if REVIT2025
+                    if (firstLine.OwnerViewId != ElementId.InvalidElementId)
+#else
+                    if (firstLine.OwnerViewId != ElementId.InvalidElementId)
+#endif
+                    {
+                        View view = _doc.GetElement(firstLine.OwnerViewId) as View;
+                        group.ViewName = view != null ? view.Name : "Unknown";
+                    }
+                }
+                else if (firstLine is ModelLine || firstLine is ModelCurve)
+                {
+                    group.LineType = "Model Line";
+                    group.ViewName = "N/A (Model)";
+                }
+            }
+
+            // Create element IDs string
+#if REVIT2025
+            group.ElementIdsString = string.Join(", ", group.ElementIds.Select(id => id.Value.ToString()));
+#else
+            group.ElementIdsString = string.Join(", ", group.ElementIds.Select(id => id.IntegerValue.ToString()));
+#endif
+        }
+
+        #endregion
     }
 
     /// <summary>
@@ -690,8 +1060,8 @@ namespace BIMKraft.Windows
                                     ownerView.SetElementOverrides(id, ogs);
                                 }
 
-                                // Store the color in extensible storage for persistence
-                                LineColorStorageService.StoreColor(line, group.ColorHex);
+                                // Store the color and description in extensible storage for persistence
+                                LineColorStorageService.StoreColorAndDescription(line, group.ColorHex, group.Description);
                             }
                         }
                     }

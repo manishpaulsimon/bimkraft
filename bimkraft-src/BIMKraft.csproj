@@ -38,6 +38,7 @@
     <!-- Services -->
     <Compile Include="Services\WorksetService.cs" />
     <Compile Include="Services\LineColorStorageService.cs" />
+    <Compile Include="Services\LineLengthPresetService.cs" />
 
     <!-- Application and Windows -->
     <Compile Include="BIMKraftRibbonApplication.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Models\ParameterMappingConfig.cs" />
     <Compile Include="Models\WarningItem.cs" />
     <Compile Include="Models\LineLengthItem.cs" />
+    <Compile Include="Models\LineLengthPreset.cs" />
 
     <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
