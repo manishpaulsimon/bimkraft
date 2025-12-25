@@ -22,12 +22,7 @@
     <Compile Include="Commands\ParameterTools\ParameterTransferProCommand.cs" />
 
     <!-- Commands - Workset Tools -->
-    <Compile Include="Commands\WorksetTools\AssignArchitecturalCommand.cs" />
-    <Compile Include="Commands\WorksetTools\AssignGridsLevelsCommand.cs" />
-    <Compile Include="Commands\WorksetTools\AssignReferencesCommand.cs" />
-    <Compile Include="Commands\WorksetTools\AssignReinforcementCommand.cs" />
-    <Compile Include="Commands\WorksetTools\AssignSteelCommand.cs" />
-    <Compile Include="Commands\WorksetTools\AssignStructuralShellCommand.cs" />
+    <Compile Include="Commands\WorksetTools\WorksetManagerCommand.cs" />
 
     <!-- Commands - Quality Tools -->
     <Compile Include="Commands\QualityTools\WarningsBrowserProCommand.cs" />
@@ -64,6 +59,11 @@
       <DependentUpon>LineLengthCalculatorWindow.xaml</DependentUpon>
     </Compile>
 
+    <!-- Windows - Workset Tools -->
+    <Compile Include="Commands\WorksetTools\WorksetManagerWindow.xaml.cs">
+      <DependentUpon>WorksetManagerWindow.xaml</DependentUpon>
+    </Compile>
+
     <!-- Windows - Family Tools -->
     <Compile Include="Commands\FamilyTools\FamilyRenamerWindow.xaml.cs">
       <DependentUpon>FamilyRenamerWindow.xaml</DependentUpon>
@@ -76,6 +76,9 @@
     <Compile Include="Models\WarningItem.cs" />
     <Compile Include="Models\LineLengthItem.cs" />
     <Compile Include="Models\LineLengthPreset.cs" />
+    <Compile Include="Models\WorksetRule.cs" />
+    <Compile Include="Models\WorksetConfiguration.cs" />
+    <Compile Include="Models\WorksetPresets.cs" />
 
     <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,6 +98,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Commands\MeasurementTools\LineLengthCalculatorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Commands\WorksetTools\WorksetManagerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

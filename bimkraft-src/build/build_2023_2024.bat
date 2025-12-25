@@ -56,12 +56,7 @@ echo   - Parameter Pro
 echo   - Parameter Transfer Pro
 echo.
 echo Workset Tools Panel:
-echo   - Raster ^& Ebenen
-echo   - Referenzen
-echo   - Architektur
-echo   - Bewehrung
-echo   - Rohbau
-echo   - Stahl
+echo   - Workset Manager (Unified rule-based workset assignment)
 echo.
 echo Quality Tools Panel:
 echo   - Warnings Browser Pro

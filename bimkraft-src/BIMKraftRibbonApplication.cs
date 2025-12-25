@@ -191,73 +191,28 @@ namespace BIMKraft
 
         private void CreateWorksetButtons(RibbonPanel panel, string assemblyPath)
         {
-            // BIMKraft_ALL_Raster - Grids and Levels
-            PushButtonData rastersButton = new PushButtonData(
-                "BIMKraft_ALL_Raster",
-                "Raster &\nEbenen",
+            // Workset Manager - Unified workset configuration tool
+            PushButtonData worksetManagerButton = new PushButtonData(
+                "BIMKraftWorksetManager",
+                "Workset\nManager",
                 assemblyPath,
-                "BIMKraft.Commands.WorksetTools.AssignGridsLevelsCommand"
+                "BIMKraft.Commands.WorksetTools.WorksetManagerCommand"
             );
-            rastersButton.ToolTip = "Assign Grids and Levels to Workset";
-            rastersButton.LongDescription = "Assigns all grid and level elements to the BIMKraft_ALL_Raster-Ebenen workset.";
 
-            // BIMKraft_ALL_Referenzen - References/Links
-            PushButtonData referencesButton = new PushButtonData(
-                "BIMKraft_ALL_Referenzen",
-                "Referenzen",
-                assemblyPath,
-                "BIMKraft.Commands.WorksetTools.AssignReferencesCommand"
-            );
-            referencesButton.ToolTip = "Assign All References to Workset";
-            referencesButton.LongDescription = "Assigns all linked files (RVT, IFC, DWG, PDF, images, point clouds, etc.) to the BIMKraft_ALL_Referenzen workset.";
+            worksetManagerButton.ToolTip = "BIM Kraft Workset Manager - Configure & Apply Rule-Based Workset Assignments";
+            worksetManagerButton.LongDescription =
+                "Powerful workset assignment tool with configurable rules:\n" +
+                "• Load BIMKraft default presets (Raster & Ebenen, Referenzen, Architektur, etc.)\n" +
+                "• Create custom workset configurations with rule-based assignments\n" +
+                "• Rules based on: Categories, Element Classes, Parameter Values, Type/Family Names\n" +
+                "• Flexible comparisons: Equals, Contains, StartsWith, GreaterThan, etc.\n" +
+                "• Multiple rules per workset (AND logic)\n" +
+                "• Enable/disable individual rules or entire configurations\n" +
+                "• Preview assignments before applying\n" +
+                "• Batch apply multiple workset assignments at once\n" +
+                "• Power & Speed - Configure once, apply consistently across projects!";
 
-            // BIMKraft_ARC - Architectural Elements
-            PushButtonData arcButton = new PushButtonData(
-                "BIMKraft_ARC",
-                "Architektur",
-                assemblyPath,
-                "BIMKraft.Commands.WorksetTools.AssignArchitecturalCommand"
-            );
-            arcButton.ToolTip = "Assign Architectural Elements to Workset";
-            arcButton.LongDescription = "Assigns architectural elements (doors, windows, non-structural walls, furniture, etc.) to the BIMKraft_ARC workset.";
-
-            // BIMKraft_TWP_Bewehrung - Reinforcement
-            PushButtonData reinforcementButton = new PushButtonData(
-                "BIMKraft_TWP_Bewehrung",
-                "Bewehrung",
-                assemblyPath,
-                "BIMKraft.Commands.WorksetTools.AssignReinforcementCommand"
-            );
-            reinforcementButton.ToolTip = "Assign Reinforcement Elements to Workset";
-            reinforcementButton.LongDescription = "Assigns reinforcement elements (rebar, fabric sheets, fabric areas) to the BIMKraft_TWP_Bewehrung workset.";
-
-            // BIMKraft_TWP_Rohbau - Structural Shell
-            PushButtonData rohbauButton = new PushButtonData(
-                "BIMKraft_TWP_Rohbau",
-                "Rohbau",
-                assemblyPath,
-                "BIMKraft.Commands.WorksetTools.AssignStructuralShellCommand"
-            );
-            rohbauButton.ToolTip = "Assign Structural Shell Elements to Workset";
-            rohbauButton.LongDescription = "Assigns structural shell elements (bearing walls, structural floors, columns, foundations) to the BIMKraft_TWP_Rohbau workset.";
-
-            // BIMKraft_TWP_Stahl - Steel
-            PushButtonData steelButton = new PushButtonData(
-                "BIMKraft_TWP_Stahl",
-                "Stahl",
-                assemblyPath,
-                "BIMKraft.Commands.WorksetTools.AssignSteelCommand"
-            );
-            steelButton.ToolTip = "Assign Steel Elements to Workset";
-            steelButton.LongDescription = "Assigns steel structural elements (beams, columns, connections, plates) to the BIMKraft_TWP_Stahl workset.";
-
-            // Add all buttons to the panel
-            panel.AddItem(rastersButton);
-            panel.AddItem(referencesButton);
-            panel.AddItem(arcButton);
-            panel.AddItem(reinforcementButton);
-            panel.AddItem(rohbauButton);
-            panel.AddItem(steelButton);
+            panel.AddItem(worksetManagerButton);
         }
 
         private void CreateWarningsBrowserProButton(RibbonPanel panel, string assemblyPath)
