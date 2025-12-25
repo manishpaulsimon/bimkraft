@@ -1,0 +1,230 @@
+<Window x:Class="BIMKraft.Windows.FamilyRenamerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="BIM Kraft - Family Renamer"
+        Width="1200" Height="800"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize">
+
+    <Window.Resources>
+        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#0066CC"/>
+        </Style>
+
+        <Style x:Key="SubHeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Foreground" Value="Gray"/>
+        </Style>
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#0066CC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="BIM Kraft - Family Renamer" Style="{StaticResource HeaderTextStyle}"/>
+            <TextBlock Text="Power &amp; Speed - Batch rename families with precision and efficiency"
+                      Style="{StaticResource SubHeaderTextStyle}" Margin="0,5,0,0"/>
+        </StackPanel>
+
+        <!-- Tab Control -->
+        <TabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
+
+            <!-- System Families Tab -->
+            <TabItem Header="System Families" x:Name="SystemFamiliesTab">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Category Selection -->
+                    <GroupBox Grid.Row="0" Header="Category Selection" Padding="10" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Select System Family Category:" Style="{StaticResource SectionHeaderStyle}"/>
+                            <ComboBox x:Name="SystemCategoryComboBox" Width="300" HorizontalAlignment="Left"
+                                     SelectionChanged="SystemCategoryComboBox_SelectionChanged"/>
+                            <TextBlock Text="Note: System types will be duplicated with new names (Revit API limitation)"
+                                      Foreground="DarkOrange" FontSize="11" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Naming Convention -->
+                    <GroupBox Grid.Row="1" Header="Naming Convention" Padding="10" Margin="0,0,0,10">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Prefix:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" x:Name="SystemPrefixTextBox" Margin="0,0,20,5"/>
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Suffix:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox Grid.Row="0" Grid.Column="3" x:Name="SystemSuffixTextBox" Margin="0,0,0,5"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Find:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="SystemFindTextBox" Margin="0,0,20,0"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="2" Text="Replace:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="3" x:Name="SystemReplaceTextBox"/>
+                            </Grid>
+
+                            <Button Content="Apply Naming Convention" Width="200" Margin="0,10,0,0"
+                                   HorizontalAlignment="Left" Click="SystemApplyNamingButton_Click"
+                                   Style="{StaticResource SecondaryButtonStyle}"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Options -->
+                    <GroupBox Grid.Row="2" Header="Options" Padding="10" Margin="0,0,0,10">
+                        <CheckBox x:Name="DeleteOriginalCheckBox"
+                                 Content="Delete original types after duplication (only if no instances exist)"/>
+                    </GroupBox>
+
+                    <!-- Data Grid -->
+                    <GroupBox Grid.Row="3" Header="Types to Rename" Padding="10">
+                        <DataGrid x:Name="SystemDataGrid" AutoGenerateColumns="False" CanUserAddRows="False"
+                                 SelectionMode="Extended" HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="Include" Binding="{Binding Selected}" Width="60"/>
+                                <DataGridTextColumn Header="Current Name" Binding="{Binding OldName}" Width="*" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="New Name (Editable)" Binding="{Binding NewName}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+
+                    <!-- Buttons -->
+                    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                        <Button Content="Select All" Width="100" Click="SelectAllButton_Click" Style="{StaticResource SecondaryButtonStyle}"/>
+                        <Button Content="Select None" Width="100" Click="SelectNoneButton_Click" Style="{StaticResource SecondaryButtonStyle}"/>
+                        <Button Content="Rename Types" Width="120" Click="SystemRenameButton_Click" Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button Content="Close" Width="100" Click="CloseButton_Click" Style="{StaticResource SecondaryButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Loadable Families Tab -->
+            <TabItem Header="Loadable Families" x:Name="LoadableFamiliesTab">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Info Panel -->
+                    <GroupBox Grid.Row="0" Header="Skelettbau Naming Convention" Padding="10" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Format: [Bauteil]_[Lage]_[Hauptmaterial/Art].rfa" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                            <TextBlock Text="Examples: TR_I_HEA.rfa (Träger, Innen, HEA) | TR_X_XXX.rfa (Träger, Ohne Zuordnung)"
+                                      Foreground="DarkBlue" FontSize="11"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Naming Panel -->
+                    <GroupBox Grid.Row="1" Header="Naming Configuration" Padding="10" Margin="0,0,0,10">
+                        <StackPanel>
+                            <!-- Skelettbau Convention -->
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Bauteil:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <ComboBox Grid.Column="1" x:Name="BauteilComboBox" Margin="0,0,20,0"/>
+
+                                <TextBlock Grid.Column="2" Text="Lage:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <ComboBox Grid.Column="3" x:Name="LageComboBox"/>
+                            </Grid>
+
+                            <!-- Buttons -->
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Apply Skelettbau Convention" Width="220" Click="ApplySkelettbauButton_Click"
+                                       Style="{StaticResource SecondaryButtonStyle}"/>
+                                <Button Content="Auto-Detect Material Codes" Width="200" Click="AutoDetectButton_Click"
+                                       Style="{StaticResource SecondaryButtonStyle}"/>
+                            </StackPanel>
+
+                            <!-- Category Filter -->
+                            <Separator Margin="0,15,0,10"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Filter by category:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <ComboBox x:Name="LoadableCategoryComboBox" Width="200" Margin="0,0,10,0"/>
+                                <Button Content="Apply Filter" Width="100" Click="ApplyCategoryFilterButton_Click"
+                                       Style="{StaticResource SecondaryButtonStyle}"/>
+                                <Button Content="Clear Filter" Width="100" Click="ClearFilterButton_Click"
+                                       Style="{StaticResource SecondaryButtonStyle}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Data Grid -->
+                    <GroupBox Grid.Row="2" Header="Families to Rename" Padding="10">
+                        <DataGrid x:Name="LoadableDataGrid" AutoGenerateColumns="False" CanUserAddRows="False"
+                                 SelectionMode="Extended" HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="Include" Binding="{Binding Selected}" Width="60"/>
+                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="150" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Current Family Name" Binding="{Binding OldName}" Width="*" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="New Family Name (Editable)" Binding="{Binding NewName}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+
+                    <!-- Buttons -->
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                        <Button Content="Select All" Width="100" Click="SelectAllButton_Click" Style="{StaticResource SecondaryButtonStyle}"/>
+                        <Button Content="Select None" Width="100" Click="SelectNoneButton_Click" Style="{StaticResource SecondaryButtonStyle}"/>
+                        <Button Content="Rename Families" Width="140" Click="LoadableRenameButton_Click" Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button Content="Close" Width="100" Click="CloseButton_Click" Style="{StaticResource SecondaryButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>

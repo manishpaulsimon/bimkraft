@@ -35,6 +35,9 @@
     <!-- Commands - Measurement Tools -->
     <Compile Include="Commands\MeasurementTools\LineLengthCalculatorCommand.cs" />
 
+    <!-- Commands - Family Tools -->
+    <Compile Include="Commands\FamilyTools\FamilyRenamerCommand.cs" />
+
     <!-- Services -->
     <Compile Include="Services\WorksetService.cs" />
     <Compile Include="Services\LineColorStorageService.cs" />
@@ -53,6 +56,9 @@
     </Compile>
     <Compile Include="Windows\LineLengthCalculatorWindow.xaml.cs">
       <DependentUpon>LineLengthCalculatorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\FamilyRenamerWindow.xaml.cs">
+      <DependentUpon>FamilyRenamerWindow.xaml</DependentUpon>
     </Compile>
 
     <!-- Models -->
@@ -81,6 +87,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\LineLengthCalculatorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\FamilyRenamerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

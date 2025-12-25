@@ -95,6 +95,23 @@ namespace BIMKraft
                     CreateLineLengthCalculatorButton(measurementPanel, assemblyPath);
                 }
 
+                // Create Family Tools Panel
+                RibbonPanel familyPanel;
+                try
+                {
+                    familyPanel = application.CreateRibbonPanel(tabName, "Family Tools");
+                }
+                catch
+                {
+                    // Panel might exist, try to get it
+                    familyPanel = GetRibbonPanel(application, tabName, "Family Tools");
+                }
+
+                if (familyPanel != null)
+                {
+                    CreateFamilyRenamerButton(familyPanel, assemblyPath);
+                }
+
                 return Result.Succeeded;
             }
             catch (Exception ex)
@@ -291,6 +308,31 @@ namespace BIMKraft
                 "• Copy data to clipboard\n" +
                 "• Zoom to selected line groups\n" +
                 "• Statistics dashboard";
+
+            panel.AddItem(buttonData);
+        }
+
+        private void CreateFamilyRenamerButton(RibbonPanel panel, string assemblyPath)
+        {
+            PushButtonData buttonData = new PushButtonData(
+                "BIMKraftFamilyRenamer",
+                "Family\nRenamer",
+                assemblyPath,
+                "BIMKraft.Commands.FamilyTools.FamilyRenamerCommand"
+            );
+
+            buttonData.ToolTip = "BIM Kraft Family Renamer - Batch Rename Families with Power & Speed";
+            buttonData.LongDescription =
+                "Rename system families and loadable families in bulk:\n" +
+                "• System Families: Duplicate with new names (Walls, Floors, Roofs, etc.)\n" +
+                "• Loadable Families: Rename directly\n" +
+                "• Apply naming conventions (prefix, suffix, find/replace)\n" +
+                "• Skelettbau naming convention for structural families\n" +
+                "• Auto-detect material codes (HEA, IPE, STB, etc.)\n" +
+                "• Category-based filtering\n" +
+                "• Preview changes before applying\n" +
+                "• Delete original system types (optional)\n" +
+                "• Power & Speed - Rename hundreds of families in seconds!";
 
             panel.AddItem(buttonData);
         }
