@@ -936,6 +936,22 @@ namespace BIMKraft.Commands.WorksetTools
         {
             try
             {
+                // Verify document is workshared
+                if (!Document.IsWorkshared)
+                {
+                    TaskDialog.Show("Error", "Document is not workshared. Worksets can only be created in workshared documents.");
+                    StatusCallback?.Invoke("Error: Document is not workshared");
+                    return;
+                }
+
+                // Verify configurations
+                if (Configurations == null || Configurations.Count == 0)
+                {
+                    TaskDialog.Show("Error", "No configurations provided to apply.");
+                    StatusCallback?.Invoke("Error: No configurations");
+                    return;
+                }
+
                 int totalAssigned = 0;
                 int totalErrors = 0;
                 var resultMessages = new List<string>();
@@ -960,6 +976,13 @@ namespace BIMKraft.Commands.WorksetTools
 
                         // Get matching elements
                         var matchedElements = GetMatchingElementsFunc(config);
+
+                        // Log how many elements were found
+                        if (matchedElements.Count == 0)
+                        {
+                            resultMessages.Add($"⚠ {config.WorksetName}: No elements matched the rules (workset created but empty)");
+                            continue;
+                        }
 
                         // Assign elements to workset
                         foreach (var element in matchedElements)
@@ -987,15 +1010,31 @@ namespace BIMKraft.Commands.WorksetTools
 
                 // Show results
                 var resultDialog = new TaskDialog("Workset Assignment Complete");
-                resultDialog.MainInstruction = $"Successfully assigned {totalAssigned} elements";
-                resultDialog.MainContent = string.Join("\n", resultMessages);
-                if (totalErrors > 0)
+                if (totalAssigned == 0)
                 {
-                    resultDialog.MainContent += $"\n\nTotal errors: {totalErrors}";
+                    resultDialog.MainInstruction = "No elements were assigned";
+                    resultDialog.MainContent = "Worksets were created but no elements matched the configured rules.\n\n" +
+                                             string.Join("\n", resultMessages);
+                }
+                else
+                {
+                    resultDialog.MainInstruction = $"Successfully assigned {totalAssigned} elements";
+                    resultDialog.MainContent = string.Join("\n", resultMessages);
+                    if (totalErrors > 0)
+                    {
+                        resultDialog.MainContent += $"\n\nTotal errors: {totalErrors}";
+                    }
                 }
                 resultDialog.Show();
 
-                StatusCallback?.Invoke($"Applied: {totalAssigned} elements assigned to {Configurations.Count} worksets");
+                if (totalAssigned > 0)
+                {
+                    StatusCallback?.Invoke($"Applied: {totalAssigned} elements assigned to {Configurations.Count} worksets");
+                }
+                else
+                {
+                    StatusCallback?.Invoke("Worksets created but no elements were assigned");
+                }
             }
             catch (Exception ex)
             {
