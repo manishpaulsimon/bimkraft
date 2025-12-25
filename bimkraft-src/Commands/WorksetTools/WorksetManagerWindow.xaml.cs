@@ -46,9 +46,6 @@ namespace BIMKraft.Commands.WorksetTools
 
             // Load presets into combo box
             LoadPresetsIntoComboBox();
-
-            // Add value converter
-            Resources.Add("NullToBooleanConverter", new NullToBooleanConverter());
         }
 
         private void LoadPresetsIntoComboBox()
