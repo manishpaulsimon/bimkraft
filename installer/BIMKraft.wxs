@@ -1,30 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
 
-  <!-- Product Definition -->
-  <Product
-    Id="B9E8F2C1-6D5A-4E3B-8F7C-1A2B3C4D5E6F"
+  <!-- Package Definition (replaces Product in WiX v4+) -->
+  <Package
     Name="BIM Kraft Tools"
-    Language="1033"
-    Version="0.1.0"
     Manufacturer="Maria Simon - BIMKraft.de"
-    UpgradeCode="C1D2E3F4-5A6B-7C8D-9E0F-1A2B3C4D5E6F">
-
-    <!-- Package Configuration -->
-    <Package
-      Id="*"
-      InstallerVersion="500"
-      Compressed="yes"
-      InstallScope="perMachine"
-      Platform="x64"
-      Description="BIM Kraft Tools - Advanced BIM tools for Revit 2023-2026"
-      Comments="Copyright (c) 2025 Maria Simon - BIMKraft.de"
-      Manufacturer="Maria Simon - BIMKraft.de" />
+    Version="0.1.0"
+    UpgradeCode="C1D2E3F4-5A6B-7C8D-9E0F-1A2B3C4D5E6F"
+    Language="1033"
+    Scope="perMachine"
+    InstallerVersion="500"
+    Compressed="true">
 
     <!-- Major Upgrade -->
     <MajorUpgrade
-      DowngradeErrorMessage="A newer version of BIM Kraft Tools is already installed."
-      AllowSameVersionUpgrades="no" />
+      DowngradeErrorMessage="A newer version of BIM Kraft Tools is already installed." />
 
     <!-- Media -->
     <MediaTemplate EmbedCab="yes" />
@@ -33,81 +23,70 @@
     <Property Id="ARPURLINFOABOUT" Value="https://bimkraft.de" />
     <Property Id="ARPHELPLINK" Value="https://bimkraft.de/support" />
     <Property Id="ARPCONTACT" Value="contact@bimkraft.de" />
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
 
     <!-- Feature Definition -->
     <Feature
       Id="ProductFeature"
       Title="BIM Kraft Tools"
       Description="BIM Kraft Tools for Revit 2023-2026"
-      Level="1"
-      ConfigurableDirectory="INSTALLFOLDER"
-      AllowAdvertise="no">
+      Level="1">
 
       <ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="AddinFiles" />
     </Feature>
 
     <!-- UI Configuration -->
-    <UIRef Id="WixUI_InstallDir" />
-    <UIRef Id="WixUI_ErrorProgressText" />
-
-    <!-- License Agreement -->
+    <UI />
     <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
 
-  </Product>
+  </Package>
 
   <!-- Directories Structure -->
   <Fragment>
-    <Directory Id="TARGETDIR" Name="SourceDir">
-
-      <!-- ProgramData installation -->
-      <Directory Id="CommonAppDataFolder">
-        <Directory Id="AutodeskProgramData" Name="Autodesk">
-          <Directory Id="ApplicationPlugins" Name="ApplicationPlugins">
-            <Directory Id="INSTALLFOLDER" Name="BIMKraft.bundle">
-              <Directory Id="ContentsFolder" Name="Contents">
-                <Directory Id="Contents2023" Name="2023">
-                  <Directory Id="Resources2023" Name="Resources">
-                    <Directory Id="Icons2023" Name="Icons" />
-                  </Directory>
+    <StandardDirectory Id="CommonAppDataFolder">
+      <Directory Id="AutodeskProgramData" Name="Autodesk">
+        <Directory Id="ApplicationPlugins" Name="ApplicationPlugins">
+          <Directory Id="INSTALLFOLDER" Name="BIMKraft.bundle">
+            <Directory Id="ContentsFolder" Name="Contents">
+              <Directory Id="Contents2023" Name="2023">
+                <Directory Id="Resources2023" Name="Resources">
+                  <Directory Id="Icons2023" Name="Icons" />
                 </Directory>
-                <Directory Id="Contents2024" Name="2024">
-                  <Directory Id="Resources2024" Name="Resources">
-                    <Directory Id="Icons2024" Name="Icons" />
-                  </Directory>
+              </Directory>
+              <Directory Id="Contents2024" Name="2024">
+                <Directory Id="Resources2024" Name="Resources">
+                  <Directory Id="Icons2024" Name="Icons" />
                 </Directory>
-                <Directory Id="Contents2025" Name="2025">
-                  <Directory Id="Resources2025" Name="Resources">
-                    <Directory Id="Icons2025" Name="Icons" />
-                  </Directory>
+              </Directory>
+              <Directory Id="Contents2025" Name="2025">
+                <Directory Id="Resources2025" Name="Resources">
+                  <Directory Id="Icons2025" Name="Icons" />
                 </Directory>
-                <Directory Id="Contents2026" Name="2026">
-                  <Directory Id="Resources2026" Name="Resources">
-                    <Directory Id="Icons2026" Name="Icons" />
-                  </Directory>
+              </Directory>
+              <Directory Id="Contents2026" Name="2026">
+                <Directory Id="Resources2026" Name="Resources">
+                  <Directory Id="Icons2026" Name="Icons" />
                 </Directory>
               </Directory>
             </Directory>
           </Directory>
         </Directory>
       </Directory>
+    </StandardDirectory>
 
-      <!-- AppData for .addin files -->
-      <Directory Id="AppDataFolder">
-        <Directory Id="AutodeskAppData" Name="Autodesk">
-          <Directory Id="RevitAppData" Name="Revit">
-            <Directory Id="AddinsFolder" Name="Addins">
-              <Directory Id="Addins2023" Name="2023" />
-              <Directory Id="Addins2024" Name="2024" />
-              <Directory Id="Addins2025" Name="2025" />
-              <Directory Id="Addins2026" Name="2026" />
-            </Directory>
+    <!-- AppData for .addin files -->
+    <StandardDirectory Id="AppDataFolder">
+      <Directory Id="AutodeskAppData" Name="Autodesk">
+        <Directory Id="RevitAppData" Name="Revit">
+          <Directory Id="AddinsFolder" Name="Addins">
+            <Directory Id="Addins2023" Name="2023" />
+            <Directory Id="Addins2024" Name="2024" />
+            <Directory Id="Addins2025" Name="2025" />
+            <Directory Id="Addins2026" Name="2026" />
           </Directory>
         </Directory>
       </Directory>
-
-    </Directory>
+    </StandardDirectory>
   </Fragment>
 
   <!-- Component Groups -->
@@ -115,100 +94,100 @@
     <ComponentGroup Id="ProductComponents">
 
       <!-- Root Bundle Files -->
-      <Component Id="PackageContents" Directory="INSTALLFOLDER" Guid="*">
-        <File Id="PackageContentsXml" Source="BIMKraft.bundle\PackageContents.xml" KeyPath="yes" />
+      <Component Id="PackageContents" Directory="INSTALLFOLDER">
+        <File Source="BIMKraft.bundle\PackageContents.xml" />
       </Component>
 
-      <Component Id="LICENSE" Directory="INSTALLFOLDER" Guid="*">
-        <File Id="LICENSEFile" Source="BIMKraft.bundle\LICENSE.txt" KeyPath="yes" />
+      <Component Id="LICENSE" Directory="INSTALLFOLDER">
+        <File Source="BIMKraft.bundle\LICENSE.txt" />
       </Component>
 
       <!-- Revit 2023 Components -->
-      <Component Id="BIMKraft2023_DLL" Directory="Contents2023" Guid="{11111111-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2023.dll" Source="BIMKraft.bundle\Contents\2023\BIMKraft.dll" KeyPath="yes" />
+      <Component Id="BIMKraft2023_DLL" Directory="Contents2023">
+        <File Source="BIMKraft.bundle\Contents\2023\BIMKraft.dll" />
       </Component>
-      <Component Id="BIMKraft2023_Addin" Directory="Contents2023" Guid="{11111112-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2023.addin_Bundle" Source="BIMKraft.bundle\Contents\2023\BIMKraft.addin" />
+      <Component Id="BIMKraft2023_Addin" Directory="Contents2023">
+        <File Source="BIMKraft.bundle\Contents\2023\BIMKraft.addin" />
       </Component>
-      <Component Id="BIMKraft2023_Config" Directory="Contents2023" Guid="{11111113-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="App2023.config" Source="BIMKraft.bundle\Contents\2023\App.config" />
+      <Component Id="BIMKraft2023_Config" Directory="Contents2023">
+        <File Source="BIMKraft.bundle\Contents\2023\App.config" />
       </Component>
-      <Component Id="Newtonsoft2023_DLL" Directory="Contents2023" Guid="{11111114-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="Newtonsoft2023.Json.dll" Source="BIMKraft.bundle\Contents\2023\Newtonsoft.Json.dll" />
+      <Component Id="Newtonsoft2023_DLL" Directory="Contents2023">
+        <File Source="BIMKraft.bundle\Contents\2023\Newtonsoft.Json.dll" />
       </Component>
-      <Component Id="Icons2023" Directory="Icons2023" Guid="{11111115-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="family_renamer2023.png" Source="BIMKraft.bundle\Contents\2023\Resources\Icons\family_renamer.png" />
-        <File Id="line_length_calculator2023.png" Source="BIMKraft.bundle\Contents\2023\Resources\Icons\line_length_calculator.png" />
-        <File Id="parameter_pro2023.png" Source="BIMKraft.bundle\Contents\2023\Resources\Icons\parameter_pro.png" />
-        <File Id="parameter_transfer_pro2023.png" Source="BIMKraft.bundle\Contents\2023\Resources\Icons\parameter_transfer_pro.png" />
-        <File Id="warnings_browser_pro2023.png" Source="BIMKraft.bundle\Contents\2023\Resources\Icons\warnings_browser_pro.png" />
-        <File Id="workset_manager2023.png" Source="BIMKraft.bundle\Contents\2023\Resources\Icons\workset_manager.png" />
+      <Component Id="Icons2023" Directory="Icons2023">
+        <File Source="BIMKraft.bundle\Contents\2023\Resources\Icons\family_renamer.png" />
+        <File Source="BIMKraft.bundle\Contents\2023\Resources\Icons\line_length_calculator.png" />
+        <File Source="BIMKraft.bundle\Contents\2023\Resources\Icons\parameter_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2023\Resources\Icons\parameter_transfer_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2023\Resources\Icons\warnings_browser_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2023\Resources\Icons\workset_manager.png" />
       </Component>
 
       <!-- Revit 2024 Components -->
-      <Component Id="BIMKraft2024_DLL" Directory="Contents2024" Guid="{22222221-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2024.dll" Source="BIMKraft.bundle\Contents\2024\BIMKraft.dll" KeyPath="yes" />
+      <Component Id="BIMKraft2024_DLL" Directory="Contents2024">
+        <File Source="BIMKraft.bundle\Contents\2024\BIMKraft.dll" />
       </Component>
-      <Component Id="BIMKraft2024_Addin" Directory="Contents2024" Guid="{22222222-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2024.addin_Bundle" Source="BIMKraft.bundle\Contents\2024\BIMKraft.addin" />
+      <Component Id="BIMKraft2024_Addin" Directory="Contents2024">
+        <File Source="BIMKraft.bundle\Contents\2024\BIMKraft.addin" />
       </Component>
-      <Component Id="BIMKraft2024_Config" Directory="Contents2024" Guid="{22222223-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="App2024.config" Source="BIMKraft.bundle\Contents\2024\App.config" />
+      <Component Id="BIMKraft2024_Config" Directory="Contents2024">
+        <File Source="BIMKraft.bundle\Contents\2024\App.config" />
       </Component>
-      <Component Id="Newtonsoft2024_DLL" Directory="Contents2024" Guid="{22222224-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="Newtonsoft2024.Json.dll" Source="BIMKraft.bundle\Contents\2024\Newtonsoft.Json.dll" />
+      <Component Id="Newtonsoft2024_DLL" Directory="Contents2024">
+        <File Source="BIMKraft.bundle\Contents\2024\Newtonsoft.Json.dll" />
       </Component>
-      <Component Id="Icons2024" Directory="Icons2024" Guid="{22222225-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="family_renamer2024.png" Source="BIMKraft.bundle\Contents\2024\Resources\Icons\family_renamer.png" />
-        <File Id="line_length_calculator2024.png" Source="BIMKraft.bundle\Contents\2024\Resources\Icons\line_length_calculator.png" />
-        <File Id="parameter_pro2024.png" Source="BIMKraft.bundle\Contents\2024\Resources\Icons\parameter_pro.png" />
-        <File Id="parameter_transfer_pro2024.png" Source="BIMKraft.bundle\Contents\2024\Resources\Icons\parameter_transfer_pro.png" />
-        <File Id="warnings_browser_pro2024.png" Source="BIMKraft.bundle\Contents\2024\Resources\Icons\warnings_browser_pro.png" />
-        <File Id="workset_manager2024.png" Source="BIMKraft.bundle\Contents\2024\Resources\Icons\workset_manager.png" />
+      <Component Id="Icons2024" Directory="Icons2024">
+        <File Source="BIMKraft.bundle\Contents\2024\Resources\Icons\family_renamer.png" />
+        <File Source="BIMKraft.bundle\Contents\2024\Resources\Icons\line_length_calculator.png" />
+        <File Source="BIMKraft.bundle\Contents\2024\Resources\Icons\parameter_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2024\Resources\Icons\parameter_transfer_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2024\Resources\Icons\warnings_browser_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2024\Resources\Icons\workset_manager.png" />
       </Component>
 
       <!-- Revit 2025 Components -->
-      <Component Id="BIMKraft2025_DLL" Directory="Contents2025" Guid="{33333331-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2025.dll" Source="BIMKraft.bundle\Contents\2025\BIMKraft.dll" KeyPath="yes" />
+      <Component Id="BIMKraft2025_DLL" Directory="Contents2025">
+        <File Source="BIMKraft.bundle\Contents\2025\BIMKraft.dll" />
       </Component>
-      <Component Id="BIMKraft2025_Addin" Directory="Contents2025" Guid="{33333332-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2025.addin_Bundle" Source="BIMKraft.bundle\Contents\2025\BIMKraft.addin" />
+      <Component Id="BIMKraft2025_Addin" Directory="Contents2025">
+        <File Source="BIMKraft.bundle\Contents\2025\BIMKraft.addin" />
       </Component>
-      <Component Id="BIMKraft2025_Config" Directory="Contents2025" Guid="{33333333-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="App2025.config" Source="BIMKraft.bundle\Contents\2025\App.config" />
+      <Component Id="BIMKraft2025_Config" Directory="Contents2025">
+        <File Source="BIMKraft.bundle\Contents\2025\App.config" />
       </Component>
-      <Component Id="Newtonsoft2025_DLL" Directory="Contents2025" Guid="{33333334-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="Newtonsoft2025.Json.dll" Source="BIMKraft.bundle\Contents\2025\Newtonsoft.Json.dll" />
+      <Component Id="Newtonsoft2025_DLL" Directory="Contents2025">
+        <File Source="BIMKraft.bundle\Contents\2025\Newtonsoft.Json.dll" />
       </Component>
-      <Component Id="Icons2025" Directory="Icons2025" Guid="{33333335-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="family_renamer2025.png" Source="BIMKraft.bundle\Contents\2025\Resources\Icons\family_renamer.png" />
-        <File Id="line_length_calculator2025.png" Source="BIMKraft.bundle\Contents\2025\Resources\Icons\line_length_calculator.png" />
-        <File Id="parameter_pro2025.png" Source="BIMKraft.bundle\Contents\2025\Resources\Icons\parameter_pro.png" />
-        <File Id="parameter_transfer_pro2025.png" Source="BIMKraft.bundle\Contents\2025\Resources\Icons\parameter_transfer_pro.png" />
-        <File Id="warnings_browser_pro2025.png" Source="BIMKraft.bundle\Contents\2025\Resources\Icons\warnings_browser_pro.png" />
-        <File Id="workset_manager2025.png" Source="BIMKraft.bundle\Contents\2025\Resources\Icons\workset_manager.png" />
+      <Component Id="Icons2025" Directory="Icons2025">
+        <File Source="BIMKraft.bundle\Contents\2025\Resources\Icons\family_renamer.png" />
+        <File Source="BIMKraft.bundle\Contents\2025\Resources\Icons\line_length_calculator.png" />
+        <File Source="BIMKraft.bundle\Contents\2025\Resources\Icons\parameter_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2025\Resources\Icons\parameter_transfer_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2025\Resources\Icons\warnings_browser_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2025\Resources\Icons\workset_manager.png" />
       </Component>
 
       <!-- Revit 2026 Components -->
-      <Component Id="BIMKraft2026_DLL" Directory="Contents2026" Guid="{44444441-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2026.dll" Source="BIMKraft.bundle\Contents\2026\BIMKraft.dll" KeyPath="yes" />
+      <Component Id="BIMKraft2026_DLL" Directory="Contents2026">
+        <File Source="BIMKraft.bundle\Contents\2026\BIMKraft.dll" />
       </Component>
-      <Component Id="BIMKraft2026_Addin" Directory="Contents2026" Guid="{44444442-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2026.addin_Bundle" Source="BIMKraft.bundle\Contents\2026\BIMKraft.addin" />
+      <Component Id="BIMKraft2026_Addin" Directory="Contents2026">
+        <File Source="BIMKraft.bundle\Contents\2026\BIMKraft.addin" />
       </Component>
-      <Component Id="BIMKraft2026_Config" Directory="Contents2026" Guid="{44444443-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="App2026.config" Source="BIMKraft.bundle\Contents\2026\App.config" />
+      <Component Id="BIMKraft2026_Config" Directory="Contents2026">
+        <File Source="BIMKraft.bundle\Contents\2026\App.config" />
       </Component>
-      <Component Id="Newtonsoft2026_DLL" Directory="Contents2026" Guid="{44444444-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="Newtonsoft2026.Json.dll" Source="BIMKraft.bundle\Contents\2026\Newtonsoft.Json.dll" />
+      <Component Id="Newtonsoft2026_DLL" Directory="Contents2026">
+        <File Source="BIMKraft.bundle\Contents\2026\Newtonsoft.Json.dll" />
       </Component>
-      <Component Id="Icons2026" Directory="Icons2026" Guid="{44444445-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="family_renamer2026.png" Source="BIMKraft.bundle\Contents\2026\Resources\Icons\family_renamer.png" />
-        <File Id="line_length_calculator2026.png" Source="BIMKraft.bundle\Contents\2026\Resources\Icons\line_length_calculator.png" />
-        <File Id="parameter_pro2026.png" Source="BIMKraft.bundle\Contents\2026\Resources\Icons\parameter_pro.png" />
-        <File Id="parameter_transfer_pro2026.png" Source="BIMKraft.bundle\Contents\2026\Resources\Icons\parameter_transfer_pro.png" />
-        <File Id="warnings_browser_pro2026.png" Source="BIMKraft.bundle\Contents\2026\Resources\Icons\warnings_browser_pro.png" />
-        <File Id="workset_manager2026.png" Source="BIMKraft.bundle\Contents\2026\Resources\Icons\workset_manager.png" />
+      <Component Id="Icons2026" Directory="Icons2026">
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\family_renamer.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\line_length_calculator.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\parameter_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\parameter_transfer_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\warnings_browser_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\workset_manager.png" />
       </Component>
 
     </ComponentGroup>
@@ -216,20 +195,20 @@
     <!-- .addin File Deployment to AppData -->
     <ComponentGroup Id="AddinFiles">
 
-      <Component Id="Addin2023" Directory="Addins2023" Guid="{A1111111-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2023.addin" Source="BIMKraft.bundle\Contents\2023\BIMKraft.addin" KeyPath="yes" />
+      <Component Id="Addin2023" Directory="Addins2023">
+        <File Source="BIMKraft.bundle\Contents\2023\BIMKraft.addin" />
       </Component>
 
-      <Component Id="Addin2024" Directory="Addins2024" Guid="{A2222222-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2024.addin" Source="BIMKraft.bundle\Contents\2024\BIMKraft.addin" KeyPath="yes" />
+      <Component Id="Addin2024" Directory="Addins2024">
+        <File Source="BIMKraft.bundle\Contents\2024\BIMKraft.addin" />
       </Component>
 
-      <Component Id="Addin2025" Directory="Addins2025" Guid="{A3333333-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2025.addin" Source="BIMKraft.bundle\Contents\2025\BIMKraft.addin" KeyPath="yes" />
+      <Component Id="Addin2025" Directory="Addins2025">
+        <File Source="BIMKraft.bundle\Contents\2025\BIMKraft.addin" />
       </Component>
 
-      <Component Id="Addin2026" Directory="Addins2026" Guid="{A4444444-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
-        <File Id="BIMKraft2026.addin" Source="BIMKraft.bundle\Contents\2026\BIMKraft.addin" KeyPath="yes" />
+      <Component Id="Addin2026" Directory="Addins2026">
+        <File Source="BIMKraft.bundle\Contents\2026\BIMKraft.addin" />
       </Component>
 
     </ComponentGroup>

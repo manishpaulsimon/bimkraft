@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <!-- Package Definition for Revit 2026 Only -->
+  <Package
+    Name="BIM Kraft Tools"
+    Manufacturer="Maria Simon - BIMKraft.de"
+    Version="0.1.0"
+    UpgradeCode="C1D2E3F4-5A6B-7C8D-9E0F-1A2B3C4D5E6F"
+    Language="1033"
+    Scope="perMachine"
+    InstallerVersion="500"
+    Compressed="true">
+
+    <!-- Major Upgrade -->
+    <MajorUpgrade
+      DowngradeErrorMessage="A newer version of BIM Kraft Tools is already installed." />
+
+    <!-- Media -->
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Properties -->
+    <Property Id="ARPURLINFOABOUT" Value="https://bimkraft.de" />
+    <Property Id="ARPHELPLINK" Value="https://bimkraft.de/support" />
+    <Property Id="ARPCONTACT" Value="contact@bimkraft.de" />
+
+    <!-- Feature Definition -->
+    <Feature
+      Id="ProductFeature"
+      Title="BIM Kraft Tools"
+      Description="BIM Kraft Tools for Revit 2026"
+      Level="1">
+
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="AddinFiles" />
+    </Feature>
+
+    <!-- UI Configuration -->
+    <UI />
+    <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
+
+  </Package>
+
+  <!-- Directories Structure -->
+  <Fragment>
+    <StandardDirectory Id="CommonAppDataFolder">
+      <Directory Id="AutodeskProgramData" Name="Autodesk">
+        <Directory Id="ApplicationPlugins" Name="ApplicationPlugins">
+          <Directory Id="INSTALLFOLDER" Name="BIMKraft.bundle">
+            <Directory Id="ContentsFolder" Name="Contents">
+              <Directory Id="Contents2026" Name="2026">
+                <Directory Id="Resources2026" Name="Resources">
+                  <Directory Id="Icons2026" Name="Icons" />
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <!-- AppData for .addin files -->
+    <StandardDirectory Id="AppDataFolder">
+      <Directory Id="AutodeskAppData" Name="Autodesk">
+        <Directory Id="RevitAppData" Name="Revit">
+          <Directory Id="AddinsFolder" Name="Addins">
+            <Directory Id="Addins2026" Name="2026" />
+          </Directory>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+  </Fragment>
+
+  <!-- Component Groups -->
+  <Fragment>
+    <ComponentGroup Id="ProductComponents">
+
+      <!-- Root Bundle Files -->
+      <Component Id="PackageContents" Directory="INSTALLFOLDER" Guid="{B0000000-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
+        <File Source="BIMKraft.bundle\PackageContents.xml" />
+      </Component>
+
+      <Component Id="LICENSE" Directory="INSTALLFOLDER" Guid="{B0000001-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
+        <File Source="BIMKraft.bundle\LICENSE.txt" />
+      </Component>
+
+      <!-- Revit 2026 Components -->
+      <Component Id="BIMKraft2026_DLL" Directory="Contents2026" Guid="{44444441-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
+        <File Source="BIMKraft.bundle\Contents\2026\BIMKraft.dll" />
+      </Component>
+      <Component Id="BIMKraft2026_Addin" Directory="Contents2026" Guid="{44444442-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
+        <File Source="BIMKraft.bundle\Contents\2026\BIMKraft.addin" />
+      </Component>
+      <Component Id="BIMKraft2026_Config" Directory="Contents2026" Guid="{44444443-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
+        <File Source="BIMKraft.bundle\Contents\2026\App.config" />
+      </Component>
+      <Component Id="Newtonsoft2026_DLL" Directory="Contents2026" Guid="{44444444-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
+        <File Source="BIMKraft.bundle\Contents\2026\Newtonsoft.Json.dll" />
+      </Component>
+      <Component Id="Icons2026" Directory="Icons2026" Guid="{44444445-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\family_renamer.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\line_length_calculator.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\parameter_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\parameter_transfer_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\warnings_browser_pro.png" />
+        <File Source="BIMKraft.bundle\Contents\2026\Resources\Icons\workset_manager.png" />
+      </Component>
+
+    </ComponentGroup>
+
+    <!-- .addin File Deployment to AppData -->
+    <ComponentGroup Id="AddinFiles">
+
+      <Component Id="Addin2026" Directory="Addins2026" Guid="{A4444444-6D5A-4E3B-8F7C-1A2B3C4D5E6F}">
+        <File Source="BIMKraft.bundle\Contents\2026\BIMKraft.addin" />
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>

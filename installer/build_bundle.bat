@@ -6,6 +6,7 @@ echo BIMKraft Bundle Builder for Autodesk App Store
 echo ================================================================
 echo.
 
+set MSBUILD="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
 set PROJECT=..\bimkraft-src\BIMKraft.csproj
 set BUNDLE_ROOT=BIMKraft.bundle
 
@@ -29,17 +30,17 @@ for %%V in (2023 2024 2025 2026) do (
     echo ================================================================
 
     REM Restore NuGet packages
-    dotnet restore %PROJECT% -p:Configuration=Release -p:Platform=x64 -p:RevitVersion=%%V
+    echo Restoring NuGet packages for Revit %%V...
+    %MSBUILD% %PROJECT% /t:Restore /p:Configuration=Release /p:Platform=x64 /p:RevitVersion=%%V
     if !errorlevel! neq 0 (
         echo ERROR: NuGet restore failed for Revit %%V
         exit /b !errorlevel!
     )
-
-    REM Clean
-    dotnet clean %PROJECT% -c Release -p:Platform=x64 -p:RevitVersion=%%V
+    echo.
 
     REM Build
-    dotnet build %PROJECT% -c Release -p:Platform=x64 -p:RevitVersion=%%V --no-restore
+    echo Building for Revit %%V...
+    %MSBUILD% %PROJECT% /p:Configuration=Release /p:Platform=x64 /p:RevitVersion=%%V
     if !errorlevel! neq 0 (
         echo ERROR: Build failed for Revit %%V
         exit /b !errorlevel!
@@ -62,11 +63,16 @@ for %%V in (2023 2024 2025 2026) do (
         exit /b !errorlevel!
     )
 
-    REM Copy Newtonsoft.Json.dll
-    copy /Y "!OUTDIR!\Newtonsoft.Json.dll" "%BUNDLE_ROOT%\Contents\%%V\"
+    REM Copy Newtonsoft.Json.dll from packages folder
+    REM Use net45 for Revit 2023/2024 (.NET 4.8), net6.0 for Revit 2025/2026 (.NET 8.0)
+    if "%%V"=="2023" set JSONLIB=..\bimkraft-src\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll
+    if "%%V"=="2024" set JSONLIB=..\bimkraft-src\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll
+    if "%%V"=="2025" set JSONLIB=..\bimkraft-src\packages\Newtonsoft.Json.13.0.4\lib\net6.0\Newtonsoft.Json.dll
+    if "%%V"=="2026" set JSONLIB=..\bimkraft-src\packages\Newtonsoft.Json.13.0.4\lib\net6.0\Newtonsoft.Json.dll
+    copy /Y "!JSONLIB!" "%BUNDLE_ROOT%\Contents\%%V\"
     if !errorlevel! neq 0 (
         echo ERROR: Failed to copy Newtonsoft.Json.dll for Revit %%V
-        echo Expected path: !OUTDIR!\Newtonsoft.Json.dll
+        echo Expected path: !JSONLIB!
         exit /b !errorlevel!
     )
 
