@@ -121,6 +121,13 @@
     <DefineConstants>REVIT2025</DefineConstants>
   </PropertyGroup>
 
+  <!-- Configuration-specific settings -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
   <!-- Revit API Path based on RevitVersion -->
   <PropertyGroup Condition=" '$(RevitVersion)' == '2023' ">
     <RevitAPIPath>C:\Program Files\Autodesk\Revit 2023</RevitAPIPath>
@@ -155,8 +162,8 @@
     <None Include="BIMKraft.addin" />
   </ItemGroup>
 
-  <!-- Post-build event to copy files to Revit Addins folder -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!-- Post-build event to copy files to Revit Addins folder (Debug only) -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
     <!-- Copy DLL and PDB -->
     <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\BIMKraft.dll&quot;" ContinueOnError="true" IgnoreExitCode="true" />
     <Exec Command="copy /Y &quot;$(TargetDir)*.pdb&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\&quot;" ContinueOnError="true" IgnoreExitCode="true" />

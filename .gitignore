@@ -186,3 +186,10 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+# Installer build artifacts
+installer/BIMKraft.bundle/
+installer/*.wixobj
+installer/*.wixpdb
+installer/*.msi
+installer/*.log

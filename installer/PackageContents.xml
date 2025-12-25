@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage
+  SchemaVersion="1.0"
+  ProductType="Application"
+  Name="BIM Kraft Tools"
+  Description="Advanced BIM tools for Revit: Parameter Management, Workset Automation, Quality Control, Measurements, and Family Tools"
+  Author="Maria Simon"
+  AppVersion="0.1.0"
+  ProductCode="{B9E8F2C1-6D5A-4E3B-8F7C-1A2B3C4D5E6F}"
+  UpgradeCode="{C1D2E3F4-5A6B-7C8D-9E0F-1A2B3C4D5E6F}"
+  FriendlyVersion="0.1.0"
+  ServerProduct="False"
+  Online="True"
+  SupportPath="https://bimkraft.de/support"
+  HelpFile="https://bimkraft.de/docs">
+
+  <CompanyDetails
+    Name="BIMKraft.de"
+    Email="contact@bimkraft.de"
+    Url="https://bimkraft.de"
+    Phone="" />
+
+  <RuntimeRequirements
+    OS="Win64"
+    Platform="Revit"
+    SeriesMin="R2023"
+    SeriesMax="R2026" />
+
+  <Components Description="BIM Kraft Tools for Revit 2023-2026">
+
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2023" SeriesMax="R2023" />
+    <ComponentEntry
+      AppName="BIM Kraft Tools"
+      Version="0.1.0"
+      ModuleName="./Contents/2023/BIMKraft.addin"
+      AppDescription="BIM Kraft Tools for Revit 2023"
+      LoadOnRevitStartup="True" />
+
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2024" SeriesMax="R2024" />
+    <ComponentEntry
+      AppName="BIM Kraft Tools"
+      Version="0.1.0"
+      ModuleName="./Contents/2024/BIMKraft.addin"
+      AppDescription="BIM Kraft Tools for Revit 2024"
+      LoadOnRevitStartup="True" />
+
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2025" SeriesMax="R2025" />
+    <ComponentEntry
+      AppName="BIM Kraft Tools"
+      Version="0.1.0"
+      ModuleName="./Contents/2025/BIMKraft.addin"
+      AppDescription="BIM Kraft Tools for Revit 2025"
+      LoadOnRevitStartup="True" />
+
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2026" SeriesMax="R2026" />
+    <ComponentEntry
+      AppName="BIM Kraft Tools"
+      Version="0.1.0"
+      ModuleName="./Contents/2026/BIMKraft.addin"
+      AppDescription="BIM Kraft Tools for Revit 2026"
+      LoadOnRevitStartup="True" />
+
+  </Components>
+</ApplicationPackage>

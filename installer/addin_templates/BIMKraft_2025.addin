@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>BIM Kraft Tools</Name>
+    <Assembly>C:\ProgramData\Autodesk\ApplicationPlugins\BIMKraft.bundle\Contents\2025\BIMKraft.dll</Assembly>
+    <FullClassName>BIMKraft.BIMKraftRibbonApplication</FullClassName>
+    <ClientId>b9e8f2c1-6d5a-4e3b-8f7c-1a2b3c4d5e6f</ClientId>
+    <VendorId>BIMKRAFT</VendorId>
+    <VendorDescription>Maria Simon - BIM Kraft Tools (bimkraft.de)</VendorDescription>
+  </AddIn>
+</RevitAddIns>

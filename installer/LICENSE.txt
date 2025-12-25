@@ -1,0 +1,45 @@
+BIM Kraft Tools - End User License Agreement (EULA)
+
+Copyright (c) 2025 Maria Simon - BIMKraft.de
+All rights reserved.
+
+This software is licensed, not sold. By installing BIM Kraft Tools, you agree
+to the following terms:
+
+1. LICENSE GRANT
+   Maria Simon grants you a non-exclusive, non-transferable license to use
+   BIM Kraft Tools for Autodesk Revit in accordance with the terms of this
+   agreement and your subscription purchased through the Autodesk App Store.
+
+2. RESTRICTIONS
+   You may not:
+   - Reverse engineer, decompile, or disassemble the software
+   - Remove or modify any copyright notices
+   - Distribute, sublicense, or transfer this software
+   - Use the software for any illegal purpose
+
+3. OWNERSHIP
+   BIM Kraft Tools is the intellectual property of Maria Simon. This license
+   does not transfer ownership rights to you.
+
+4. WARRANTY DISCLAIMER
+   This software is provided "AS IS" without warranty of any kind, either
+   express or implied, including but not limited to warranties of
+   merchantability or fitness for a particular purpose.
+
+5. LIMITATION OF LIABILITY
+   In no event shall Maria Simon be liable for any damages arising from the
+   use of this software.
+
+6. TERMINATION
+   This license is effective until terminated. Your rights will terminate
+   automatically if you fail to comply with these terms.
+
+7. SUPPORT
+   Support is provided at: https://bimkraft.de/support
+   Email: contact@bimkraft.de
+
+For full terms and conditions, visit: https://bimkraft.de/terms
+
+Maria Simon - BIMKraft.de
+https://bimkraft.de
