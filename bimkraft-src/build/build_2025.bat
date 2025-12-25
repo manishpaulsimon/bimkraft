@@ -27,8 +27,30 @@ echo Build completed successfully!
 echo.
 echo DLL deployed to: %%AppData%%\Autodesk\Revit\Addins\2025\BIMKraft.dll
 echo.
-echo Tools available in BIMKraft tab:
-echo   - Parameter Pro (Parameter Tools panel)
-echo   - Parameter Transfer Pro (Parameter Tools panel)
-echo   - Workset Tools (Workset Tools panel)
+echo ========================================
+echo BIMKraft Tools Available:
+echo ========================================
+echo.
+echo Parameter Tools Panel:
+echo   - Parameter Pro
+echo   - Parameter Transfer Pro
+echo.
+echo Workset Tools Panel:
+echo   - Raster ^& Ebenen
+echo   - Referenzen
+echo   - Architektur
+echo   - Bewehrung
+echo   - Rohbau
+echo   - Stahl
+echo.
+echo Quality Tools Panel:
+echo   - Warnings Browser Pro
+echo.
+echo Measurement Tools Panel:
+echo   - Line Length Calculator
+echo.
+echo Family Tools Panel:
+echo   - Family Renamer
+echo.
+echo ========================================
 pause
