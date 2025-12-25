@@ -956,21 +956,49 @@ namespace BIMKraft.Commands.WorksetTools
                 int totalErrors = 0;
                 var resultMessages = new List<string>();
 
-                using (Transaction trans = new Transaction(Document, "Apply Workset Assignments"))
+                // TRANSACTION 1: Create worksets that don't exist
+                // This follows the PyRevit pattern of separating workset creation from element assignment
+                using (Transaction createTrans = new Transaction(Document, "Create Worksets"))
                 {
-                    trans.Start();
+                    createTrans.Start();
+
+                    foreach (var config in Configurations)
+                    {
+                        // Check if workset exists
+                        Workset existingWorkset = FindWorkset(config.WorksetName);
+                        if (existingWorkset == null)
+                        {
+                            try
+                            {
+                                // Create the workset
+                                Workset.Create(Document, config.WorksetName);
+                            }
+                            catch (Exception ex)
+                            {
+                                resultMessages.Add($"❌ {config.WorksetName}: Failed to create workset - {ex.Message}");
+                            }
+                        }
+                    }
+
+                    createTrans.Commit();
+                }
+
+                // TRANSACTION 2: Assign elements to worksets
+                using (Transaction assignTrans = new Transaction(Document, "Assign Elements to Worksets"))
+                {
+                    assignTrans.Start();
 
                     foreach (var config in Configurations)
                     {
                         int assignedCount = 0;
                         int errorCount = 0;
 
-                        // Find or create workset
-                        Workset targetWorkset = WorksetService.FindOrCreateWorkset(config.WorksetName);
+                        // Find the workset (should exist now after Transaction 1)
+                        Workset targetWorkset = FindWorkset(config.WorksetName);
 
                         if (targetWorkset == null)
                         {
-                            resultMessages.Add($"❌ {config.WorksetName}: Failed to create workset");
+                            resultMessages.Add($"❌ {config.WorksetName}: Workset not found");
                             continue;
                         }
 
@@ -1005,7 +1033,7 @@ namespace BIMKraft.Commands.WorksetTools
                         resultMessages.Add($"{status} {config.WorksetName}: {assignedCount} assigned, {errorCount} errors");
                     }
 
-                    trans.Commit();
+                    assignTrans.Commit();
                 }
 
                 // Show results
@@ -1040,6 +1068,23 @@ namespace BIMKraft.Commands.WorksetTools
             {
                 TaskDialog.Show("Error", $"Error applying worksets:\n{ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Finds an existing workset by name without creating it.
+        /// </summary>
+        private Workset FindWorkset(string worksetName)
+        {
+            var worksets = new FilteredWorksetCollector(Document)
+                .OfKind(WorksetKind.UserWorkset);
+
+            foreach (Workset workset in worksets)
+            {
+                if (workset.Name == worksetName)
+                    return workset;
+            }
+
+            return null;
         }
 
         public string GetName()
