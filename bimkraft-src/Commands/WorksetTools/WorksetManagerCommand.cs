@@ -23,9 +23,9 @@ namespace BIMKraft.Commands.WorksetTools
                     return Result.Cancelled;
                 }
 
-                // Show the Workset Manager window
+                // Show the Workset Manager window (modeless to allow ExternalEvent to execute)
                 var window = new WorksetManagerWindow(uidoc);
-                window.ShowDialog();
+                window.Show();
 
                 return Result.Succeeded;
             }
