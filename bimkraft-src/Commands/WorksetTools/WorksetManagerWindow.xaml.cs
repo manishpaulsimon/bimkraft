@@ -28,6 +28,8 @@ namespace BIMKraft.Commands.WorksetTools
         private readonly WorksetService _worksetService;
         private ObservableCollection<WorksetConfig> _worksetConfigurations;
         private ObservableCollection<WorksetRule> _currentRules;
+        private readonly ExternalEvent _externalEvent;
+        private readonly WorksetApplyHandler _applyHandler;
 
         public WorksetManagerWindow(UIDocument uidoc)
         {
@@ -46,6 +48,16 @@ namespace BIMKraft.Commands.WorksetTools
 
             // Load presets into combo box
             LoadPresetsIntoComboBox();
+
+            // Create ExternalEvent for applying worksets
+            _applyHandler = new WorksetApplyHandler();
+            _externalEvent = ExternalEvent.Create(_applyHandler);
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            _externalEvent?.Dispose();
         }
 
         private void LoadPresetsIntoComboBox()
@@ -323,66 +335,17 @@ namespace BIMKraft.Commands.WorksetTools
                     return;
                 }
 
-                int totalAssigned = 0;
-                int totalErrors = 0;
-                var resultMessages = new List<string>();
+                // Prepare data for external event
+                _applyHandler.Document = _doc;
+                _applyHandler.WorksetService = _worksetService;
+                _applyHandler.Configurations = enabledConfigs;
+                _applyHandler.StatusCallback = (message) => Dispatcher.Invoke(() => StatusTextBlock.Text = message);
+                _applyHandler.GetMatchingElementsFunc = GetMatchingElements;
 
-                using (Transaction trans = new Transaction(_doc, "Apply Workset Assignments"))
-                {
-                    trans.Start();
+                // Raise external event to execute on Revit's main thread
+                _externalEvent.Raise();
 
-                    foreach (var config in enabledConfigs)
-                    {
-                        int assignedCount = 0;
-                        int errorCount = 0;
-
-                        // Find or create workset
-                        Workset targetWorkset = _worksetService.FindOrCreateWorkset(config.WorksetName);
-
-                        if (targetWorkset == null)
-                        {
-                            resultMessages.Add($"❌ {config.WorksetName}: Failed to create workset");
-                            continue;
-                        }
-
-                        // Get matching elements
-                        var matchedElements = GetMatchingElements(config);
-
-                        // Assign elements to workset
-                        foreach (var element in matchedElements)
-                        {
-                            try
-                            {
-                                _worksetService.ChangeElementWorkset(element, targetWorkset.Id);
-                                assignedCount++;
-                            }
-                            catch
-                            {
-                                errorCount++;
-                            }
-                        }
-
-                        totalAssigned += assignedCount;
-                        totalErrors += errorCount;
-
-                        string status = assignedCount > 0 ? "✓" : "○";
-                        resultMessages.Add($"{status} {config.WorksetName}: {assignedCount} assigned, {errorCount} errors");
-                    }
-
-                    trans.Commit();
-                }
-
-                // Show results
-                var resultDialog = new TaskDialog("Workset Assignment Complete");
-                resultDialog.MainInstruction = $"Successfully assigned {totalAssigned} elements";
-                resultDialog.MainContent = string.Join("\n", resultMessages);
-                if (totalErrors > 0)
-                {
-                    resultDialog.MainContent += $"\n\nTotal errors: {totalErrors}";
-                }
-                resultDialog.Show();
-
-                StatusTextBlock.Text = $"Applied: {totalAssigned} elements assigned to {enabledConfigs.Count} worksets";
+                StatusTextBlock.Text = "Applying worksets...";
             }
             catch (Exception ex)
             {
@@ -957,6 +920,92 @@ namespace BIMKraft.Commands.WorksetTools
         {
             public string DisplayName { get; set; }
             public int CategoryId { get; set; }
+        }
+    }
+
+    // External event handler for applying worksets
+    public class WorksetApplyHandler : IExternalEventHandler
+    {
+        public Document Document { get; set; }
+        public WorksetService WorksetService { get; set; }
+        public List<WorksetConfig> Configurations { get; set; }
+        public Action<string> StatusCallback { get; set; }
+        public Func<WorksetConfig, List<Element>> GetMatchingElementsFunc { get; set; }
+
+        public void Execute(UIApplication app)
+        {
+            try
+            {
+                int totalAssigned = 0;
+                int totalErrors = 0;
+                var resultMessages = new List<string>();
+
+                using (Transaction trans = new Transaction(Document, "Apply Workset Assignments"))
+                {
+                    trans.Start();
+
+                    foreach (var config in Configurations)
+                    {
+                        int assignedCount = 0;
+                        int errorCount = 0;
+
+                        // Find or create workset
+                        Workset targetWorkset = WorksetService.FindOrCreateWorkset(config.WorksetName);
+
+                        if (targetWorkset == null)
+                        {
+                            resultMessages.Add($"❌ {config.WorksetName}: Failed to create workset");
+                            continue;
+                        }
+
+                        // Get matching elements
+                        var matchedElements = GetMatchingElementsFunc(config);
+
+                        // Assign elements to workset
+                        foreach (var element in matchedElements)
+                        {
+                            try
+                            {
+                                WorksetService.ChangeElementWorkset(element, targetWorkset.Id);
+                                assignedCount++;
+                            }
+                            catch
+                            {
+                                errorCount++;
+                            }
+                        }
+
+                        totalAssigned += assignedCount;
+                        totalErrors += errorCount;
+
+                        string status = assignedCount > 0 ? "✓" : "○";
+                        resultMessages.Add($"{status} {config.WorksetName}: {assignedCount} assigned, {errorCount} errors");
+                    }
+
+                    trans.Commit();
+                }
+
+                // Show results
+                var resultDialog = new TaskDialog("Workset Assignment Complete");
+                resultDialog.MainInstruction = $"Successfully assigned {totalAssigned} elements";
+                resultDialog.MainContent = string.Join("\n", resultMessages);
+                if (totalErrors > 0)
+                {
+                    resultDialog.MainContent += $"\n\nTotal errors: {totalErrors}";
+                }
+                resultDialog.Show();
+
+                StatusCallback?.Invoke($"Applied: {totalAssigned} elements assigned to {Configurations.Count} worksets");
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", $"Error applying worksets:\n{ex.Message}");
+            }
+        }
+
+        public string GetName()
+        {
+            return "Workset Apply Handler";
         }
     }
 }
