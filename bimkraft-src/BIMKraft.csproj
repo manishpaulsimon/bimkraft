@@ -157,8 +157,17 @@
 
   <!-- Post-build event to copy files to Revit Addins folder -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <!-- Copy DLL and PDB -->
     <Exec Command="copy /Y &quot;$(TargetPath)&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\BIMKraft.dll&quot;" ContinueOnError="true" IgnoreExitCode="true" />
     <Exec Command="copy /Y &quot;$(TargetDir)*.pdb&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\&quot;" ContinueOnError="true" IgnoreExitCode="true" />
+
+    <!-- Copy .addin file -->
     <Exec Command="copy /Y &quot;$(ProjectDir)BIMKraft.addin&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\&quot;" ContinueOnError="true" IgnoreExitCode="true" />
+
+    <!-- Create Resources/Icons directory if it doesn't exist -->
+    <Exec Command="if not exist &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\Resources\Icons&quot; mkdir &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\Resources\Icons&quot;" ContinueOnError="true" IgnoreExitCode="true" />
+
+    <!-- Copy icon files if they exist -->
+    <Exec Command="if exist &quot;$(ProjectDir)Resources\Icons\*.png&quot; copy /Y &quot;$(ProjectDir)Resources\Icons\*.png&quot; &quot;$(AppData)\Autodesk\Revit\Addins\$(RevitVersion)\Resources\Icons\&quot;" ContinueOnError="true" IgnoreExitCode="true" />
   </Target>
 </Project>

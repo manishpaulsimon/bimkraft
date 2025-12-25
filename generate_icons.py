@@ -142,18 +142,19 @@ def create_warnings_browser_icon():
 
 
 def create_parameter_pro_icon():
-    """Create Parameter Pro icon - Gear with lightning"""
+    """Create Parameter Pro icon - P with lightning"""
     img = Image.new('RGBA', ICON_SIZE, (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    # Gradient background
-    create_gradient_background(draw, ICON_SIZE, (50, 100, 200), (25, 50, 100))
+    # Electric blue gradient background
+    create_gradient_background(draw, ICON_SIZE, ELECTRIC_BLUE, (0, 75, 128))
 
-    # Draw stylized 'P' with lightning
+    # Draw bold 'P' letter
     draw.rectangle([8, 8, 12, 24], fill=GOLD)
     draw.ellipse([8, 8, 18, 16], fill=GOLD)
+    draw.ellipse([12, 10, 16, 14], fill=(0, 75, 128))
 
-    # Small lightning bolt
+    # Lightning bolt accent
     draw_lightning_bolt(draw, offset_x=6, offset_y=4, color=LIGHTNING_YELLOW)
 
     # Glossy border
@@ -162,39 +163,25 @@ def create_parameter_pro_icon():
     return img
 
 
-def create_workset_tools_icon():
-    """Create Workset Tools icon - Layers with power effect"""
+def create_parameter_transfer_icon():
+    """Create Parameter Transfer Pro icon - Arrows with lightning"""
     img = Image.new('RGBA', ICON_SIZE, (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    # Gradient background
-    create_gradient_background(draw, ICON_SIZE, STEEL_GRAY, (50, 60, 70))
+    # Electric blue gradient background
+    create_gradient_background(draw, ICON_SIZE, (0, 120, 200), (0, 60, 100))
 
-    # Draw stacked layers
-    for i, y in enumerate([8, 14, 20]):
-        alpha = 255 - i * 40
-        draw.rectangle([6, y, 26, y+3], fill=(255, 215, 0, alpha))
+    # Draw transfer arrows
+    # Right arrow
+    arrow_right = [(6, 12), (16, 12), (16, 8), (22, 14), (16, 20), (16, 16), (6, 16)]
+    draw.polygon(arrow_right, fill=GOLD)
+
+    # Left arrow (smaller, offset)
+    arrow_left = [(26, 18), (20, 18), (20, 22), (14, 16), (20, 10), (20, 14), (26, 14)]
+    draw.polygon(arrow_left, fill=LIGHTNING_YELLOW)
 
     # Lightning accent
-    draw_lightning_bolt(draw, offset_x=-4, offset_y=0, color=LIGHTNING_YELLOW)
-
-    # Glossy border
-    draw_glossy_border(draw, ICON_SIZE)
-
-    return img
-
-
-def create_quality_tools_icon():
-    """Create Quality Tools icon - Check mark with power"""
-    img = Image.new('RGBA', ICON_SIZE, (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    # Gradient background
-    create_gradient_background(draw, ICON_SIZE, ENERGY_GREEN, (25, 100, 25))
-
-    # Draw check mark
-    check_points = [(8, 16), (14, 22), (24, 10)]
-    draw.line(check_points, fill=LIGHTNING_YELLOW, width=4, joint='curve')
+    draw_lightning_bolt(draw, offset_x=-6, offset_y=0, color=LIGHTNING_YELLOW)
 
     # Speed lines
     draw_speed_lines(draw)
@@ -205,21 +192,74 @@ def create_quality_tools_icon():
     return img
 
 
-def create_measurement_tools_icon():
-    """Create Measurement Tools icon - Ruler with lightning"""
+def create_workset_manager_icon():
+    """Create Workset Manager icon - Layers with power effect"""
     img = Image.new('RGBA', ICON_SIZE, (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    # Gradient background
-    create_gradient_background(draw, ICON_SIZE, (200, 100, 0), (100, 50, 0))
+    # Steel gray gradient background
+    create_gradient_background(draw, ICON_SIZE, STEEL_GRAY, (50, 60, 70))
 
-    # Draw ruler
-    draw.rectangle([4, 12, 28, 20], fill=GOLD)
-    for x in range(6, 28, 3):
-        draw.line([(x, 13), (x, 15)], fill=(0, 0, 0), width=1)
+    # Draw stacked layers with fade effect
+    for i, y in enumerate([8, 14, 20]):
+        alpha = 255 - i * 40
+        draw.rectangle([6, y, 26, y+3], fill=(255, 215, 0, alpha))
+
+    # Add 'W' for Workset
+    draw.line([(8, 6), (10, 12), (12, 8), (14, 12), (16, 6)], fill=(255, 255, 255), width=2)
 
     # Lightning accent
-    draw_lightning_bolt(draw, offset_x=-2, offset_y=-2, color=LIGHTNING_YELLOW)
+    draw_lightning_bolt(draw, offset_x=-4, offset_y=2, color=LIGHTNING_YELLOW)
+
+    # Glossy border
+    draw_glossy_border(draw, ICON_SIZE)
+
+    return img
+
+
+def create_warnings_browser_pro_icon():
+    """Create Warnings Browser Pro icon - Enhanced warning triangle"""
+    img = Image.new('RGBA', ICON_SIZE, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Power orange gradient background
+    create_gradient_background(draw, ICON_SIZE, POWER_ORANGE, (180, 50, 0))
+
+    # Draw warning triangle (larger and more prominent)
+    points = [(16, 4), (6, 26), (26, 26)]
+    draw.polygon(points, fill=LIGHTNING_YELLOW, outline=(255, 255, 255), width=2)
+
+    # Exclamation mark (bold)
+    draw.rectangle([14, 10, 18, 20], fill=FIRE_RED)
+    draw.ellipse([14, 22, 18, 26], fill=FIRE_RED)
+
+    # Speed lines for quick browsing
+    draw_speed_lines(draw)
+
+    # Glossy border
+    draw_glossy_border(draw, ICON_SIZE)
+
+    return img
+
+
+def create_line_length_calculator_icon():
+    """Create Line Length Calculator icon - Ruler with connected lines"""
+    img = Image.new('RGBA', ICON_SIZE, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Power orange gradient background
+    create_gradient_background(draw, ICON_SIZE, (200, 100, 0), (100, 50, 0))
+
+    # Draw ruler/measurement symbol
+    draw.rectangle([4, 12, 28, 20], fill=GOLD)
+    for x in range(6, 28, 3):
+        draw.line([(x, 13), (x, 16)], fill=(0, 0, 0), width=1)
+
+    # Draw connected line segments above
+    draw.line([(6, 8), (16, 8), (16, 4), (26, 4)], fill=(255, 255, 255), width=2)
+
+    # Lightning accent for speed
+    draw_lightning_bolt(draw, offset_x=-2, offset_y=-4, color=LIGHTNING_YELLOW)
 
     # Glossy border
     draw_glossy_border(draw, ICON_SIZE)
@@ -233,36 +273,61 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     icons = {
-        'family_renamer.png': create_family_renamer_icon(),
-        'warnings_browser.png': create_warnings_browser_icon(),
+        # Parameter Tools
         'parameter_pro.png': create_parameter_pro_icon(),
-        'workset_tools.png': create_workset_tools_icon(),
-        'quality_tools.png': create_quality_tools_icon(),
-        'measurement_tools.png': create_measurement_tools_icon(),
+        'parameter_transfer_pro.png': create_parameter_transfer_icon(),
+
+        # Workset Tools
+        'workset_manager.png': create_workset_manager_icon(),
+
+        # Quality Tools
+        'warnings_browser_pro.png': create_warnings_browser_pro_icon(),
+
+        # Measurement Tools
+        'line_length_calculator.png': create_line_length_calculator_icon(),
+
+        # Family Tools
+        'family_renamer.png': create_family_renamer_icon(),
     }
 
-    print("BIM Kraft Icon Generator")
     print("=" * 50)
-    print(f"Generating {len(icons)} power & speed themed icons...")
+    print("        BIM KRAFT ICON GENERATOR")
+    print("        Power & Speed Themed Icons")
+    print("=" * 50)
+    print()
+    print(f"Generating {len(icons)} icons...")
     print()
 
     for filename, img in icons.items():
         filepath = os.path.join(OUTPUT_DIR, filename)
         img.save(filepath, 'PNG')
-        print(f"✓ Created: {filepath}")
+        print(f"* {filename:<35} -> {filepath}")
 
     print()
-    print("=" * 50)
-    print(f"All icons generated successfully in '{OUTPUT_DIR}' folder!")
+    print("=" * 60)
+    print("SUCCESS - All icons generated!")
+    print("=" * 60)
     print()
-    print("Icon Details:")
-    print(f"  - Size: {ICON_SIZE[0]}x{ICON_SIZE[1]} pixels")
-    print(f"  - Format: PNG with transparency")
-    print(f"  - Theme: Power & Speed (lightning, gradients, dynamic effects)")
+    print("Icon Specifications:")
+    print(f"  - Size: {ICON_SIZE[0]}x{ICON_SIZE[1]} pixels (Revit ribbon standard)")
+    print(f"  - Format: PNG with RGBA transparency")
+    print(f"  - Theme: Electric Blue + Lightning Yellow (BIM Power)")
+    print(f"  - Effects: Radial gradients, lightning bolts, speed lines")
     print()
-    print("To use these icons in Revit, copy them to:")
-    print("  - For PyRevit: [tool].pushbutton/icon.png")
-    print("  - For C# Add-in: Update button code with icon paths")
+    print("Brand Colors:")
+    print(f"  - Electric Blue:    RGB(0, 150, 255)")
+    print(f"  - Lightning Yellow: RGB(255, 255, 0)")
+    print(f"  - Power Orange:     RGB(255, 100, 0)")
+    print(f"  - Steel Gray:       RGB(100, 120, 140)")
+    print(f"  - Gold:             RGB(255, 215, 0)")
+    print()
+    print("Integration Instructions:")
+    print("  1. Copy icons to: bimkraft-src/Resources/Icons/")
+    print("  2. Update BIMKraftRibbonApplication.cs to reference icons")
+    print("  3. Set icons as embedded resources in BIMKraft.csproj")
+    print()
+    print("See DESIGN.md for complete brand guidelines.")
+    print()
 
 
 if __name__ == "__main__":

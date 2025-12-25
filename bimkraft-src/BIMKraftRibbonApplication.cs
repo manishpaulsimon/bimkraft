@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 using Autodesk.Revit.UI;
@@ -7,6 +8,33 @@ namespace BIMKraft
 {
     public class BIMKraftRibbonApplication : IExternalApplication
     {
+        /// <summary>
+        /// Load an icon from the Resources/Icons folder
+        /// </summary>
+        private BitmapImage LoadIcon(string iconName)
+        {
+            try
+            {
+                string assemblyPath = Assembly.GetExecutingAssembly().Location;
+                string assemblyDir = Path.GetDirectoryName(assemblyPath);
+                string iconPath = Path.Combine(assemblyDir, "Resources", "Icons", iconName);
+
+                if (File.Exists(iconPath))
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(iconPath);
+                    bitmap.EndInit();
+                    return bitmap;
+                }
+            }
+            catch
+            {
+                // Icon loading failed, button will show without icon
+            }
+            return null;
+        }
+
         public Result OnStartup(UIControlledApplication application)
         {
             try
@@ -164,6 +192,9 @@ namespace BIMKraft
                 "• Save and load presets\n" +
                 "• Search and filter parameters";
 
+            // Set icon
+            buttonData.LargeImage = LoadIcon("parameter_pro.png");
+
             panel.AddItem(buttonData);
         }
 
@@ -185,6 +216,9 @@ namespace BIMKraft
                 "• Save and load mapping presets\n" +
                 "• Bulk transfer with validation\n" +
                 "• Perfect for IFC parameter mapping (Pset_Item Width, etc.)";
+
+            // Set icon
+            buttonData.LargeImage = LoadIcon("parameter_transfer_pro.png");
 
             panel.AddItem(buttonData);
         }
@@ -212,6 +246,9 @@ namespace BIMKraft
                 "• Batch apply multiple workset assignments at once\n" +
                 "• Power & Speed - Configure once, apply consistently across projects!";
 
+            // Set icon
+            worksetManagerButton.LargeImage = LoadIcon("workset_manager.png");
+
             panel.AddItem(worksetManagerButton);
         }
 
@@ -237,6 +274,9 @@ namespace BIMKraft
                 "• Statistics dashboard\n" +
                 "• Export to HTML or CSV/Excel\n" +
                 "• Expand/collapse warning groups";
+
+            // Set icon
+            buttonData.LargeImage = LoadIcon("warnings_browser_pro.png");
 
             panel.AddItem(buttonData);
         }
@@ -264,6 +304,9 @@ namespace BIMKraft
                 "• Zoom to selected line groups\n" +
                 "• Statistics dashboard";
 
+            // Set icon
+            buttonData.LargeImage = LoadIcon("line_length_calculator.png");
+
             panel.AddItem(buttonData);
         }
 
@@ -288,6 +331,9 @@ namespace BIMKraft
                 "• Preview changes before applying\n" +
                 "• Delete original system types (optional)\n" +
                 "• Power & Speed - Rename hundreds of families in seconds!";
+
+            // Set icon
+            buttonData.LargeImage = LoadIcon("family_renamer.png");
 
             panel.AddItem(buttonData);
         }
