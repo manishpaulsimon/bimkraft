@@ -43,21 +43,29 @@
     <Compile Include="Services\LineColorStorageService.cs" />
     <Compile Include="Services\LineLengthPresetService.cs" />
 
-    <!-- Application and Windows -->
+    <!-- Application -->
     <Compile Include="BIMKraftRibbonApplication.cs" />
-    <Compile Include="Windows\ParameterManagerWindow.xaml.cs">
+
+    <!-- Windows - Parameter Tools -->
+    <Compile Include="Commands\ParameterTools\ParameterManagerWindow.xaml.cs">
       <DependentUpon>ParameterManagerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\ParameterTransferWindow.xaml.cs">
+    <Compile Include="Commands\ParameterTools\ParameterTransferWindow.xaml.cs">
       <DependentUpon>ParameterTransferWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\WarningsBrowserWindow.xaml.cs">
+
+    <!-- Windows - Quality Tools -->
+    <Compile Include="Commands\QualityTools\WarningsBrowserWindow.xaml.cs">
       <DependentUpon>WarningsBrowserWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\LineLengthCalculatorWindow.xaml.cs">
+
+    <!-- Windows - Measurement Tools -->
+    <Compile Include="Commands\MeasurementTools\LineLengthCalculatorWindow.xaml.cs">
       <DependentUpon>LineLengthCalculatorWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\FamilyRenamerWindow.xaml.cs">
+
+    <!-- Windows - Family Tools -->
+    <Compile Include="Commands\FamilyTools\FamilyRenamerWindow.xaml.cs">
       <DependentUpon>FamilyRenamerWindow.xaml</DependentUpon>
     </Compile>
 
@@ -74,23 +82,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Include="Windows\ParameterManagerWindow.xaml">
+    <Page Include="Commands\ParameterTools\ParameterManagerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\ParameterTransferWindow.xaml">
+    <Page Include="Commands\ParameterTools\ParameterTransferWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\WarningsBrowserWindow.xaml">
+    <Page Include="Commands\QualityTools\WarningsBrowserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\LineLengthCalculatorWindow.xaml">
+    <Page Include="Commands\MeasurementTools\LineLengthCalculatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\FamilyRenamerWindow.xaml">
+    <Page Include="Commands\FamilyTools\FamilyRenamerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
