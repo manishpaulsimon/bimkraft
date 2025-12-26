@@ -3,6 +3,9 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Media.Imaging;
 using Autodesk.Revit.UI;
+using BIMKraft.Models;
+using BIMKraft.Services;
+using BIMKraft.UI.Licensing;
 
 namespace BIMKraft
 {
@@ -39,6 +42,96 @@ namespace BIMKraft
         {
             try
             {
+                // Validate license at startup
+                LicenseInfo licenseInfo = LicenseManager.ValidateLicense();
+
+                // Check license status
+                if (licenseInfo.Status == LicenseStatus.Invalid)
+                {
+                    // No license or trial - prompt user to start trial or activate
+                    TaskDialogResult result = TaskDialog.Show(
+                        "BIMKraft License",
+                        "Welcome to BIMKraft!\n\n" +
+                        "You need a license to use BIMKraft.\n\n" +
+                        "Would you like to start a free 30-day trial?",
+                        TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No
+                    );
+
+                    if (result == TaskDialogResult.Yes)
+                    {
+                        // Start trial
+                        try
+                        {
+                            TrialInfo trial = LicenseManager.StartTrial();
+                            TaskDialog.Show(
+                                "Trial Started",
+                                $"Your 30-day free trial has begun!\n\n" +
+                                $"Trial ends on: {trial.TrialEndDate:yyyy-MM-dd}\n\n" +
+                                $"Enjoy full access to all BIMKraft features!"
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            TaskDialog.Show("Error", "Failed to start trial:\n\n" + ex.Message);
+                            return Result.Failed;
+                        }
+                    }
+                    else
+                    {
+                        // Show license activation window
+                        LicenseActivationWindow licenseWindow = new LicenseActivationWindow();
+                        bool? dialogResult = licenseWindow.ShowDialog();
+
+                        if (dialogResult != true)
+                        {
+                            // User cancelled - don't load ribbon
+                            return Result.Cancelled;
+                        }
+                    }
+                }
+                else if (licenseInfo.Status == LicenseStatus.Expired)
+                {
+                    // License expired - show activation window
+                    TaskDialog.Show(
+                        "License Expired",
+                        "Your BIMKraft license has expired.\n\n" +
+                        "Please renew your license to continue using BIMKraft.",
+                        TaskDialogCommonButtons.Ok
+                    );
+
+                    LicenseActivationWindow licenseWindow = new LicenseActivationWindow();
+                    bool? dialogResult = licenseWindow.ShowDialog();
+
+                    if (dialogResult != true)
+                    {
+                        return Result.Cancelled;
+                    }
+                }
+                else if (licenseInfo.Status == LicenseStatus.Trial)
+                {
+                    // Check if we should show trial reminder
+                    if (LicenseManager.ShouldShowTrialReminder(out int daysRemaining))
+                    {
+                        TaskDialog.Show(
+                            "BIMKraft Trial Reminder",
+                            $"Your BIMKraft trial has {daysRemaining} day{(daysRemaining != 1 ? "s" : "")} remaining.\n\n" +
+                            $"Purchase a license at https://bimkraft.com/pricing to continue using BIMKraft after the trial ends.",
+                            TaskDialogCommonButtons.Ok
+                        );
+                    }
+                }
+                else if (licenseInfo.Status == LicenseStatus.GracePeriod)
+                {
+                    // Grace period - warn user
+                    TaskDialog.Show(
+                        "License Grace Period",
+                        $"Your BIMKraft license has expired.\n\n" +
+                        $"You have {licenseInfo.RemainingDays} day{(licenseInfo.RemainingDays != 1 ? "s" : "")} remaining in the grace period.\n\n" +
+                        $"Please renew your license to avoid interruption.",
+                        TaskDialogCommonButtons.Ok
+                    );
+                }
+
                 // Use BIMKraft tab name
                 string tabName = "BIMKraft";
 
@@ -138,6 +231,23 @@ namespace BIMKraft
                 if (familyPanel != null)
                 {
                     CreateFamilyRenamerButton(familyPanel, assemblyPath);
+                }
+
+                // Create License Tools Panel
+                RibbonPanel licensePanel;
+                try
+                {
+                    licensePanel = application.CreateRibbonPanel(tabName, "License");
+                }
+                catch
+                {
+                    // Panel might exist, try to get it
+                    licensePanel = GetRibbonPanel(application, tabName, "License");
+                }
+
+                if (licensePanel != null)
+                {
+                    CreateManageLicenseButton(licensePanel, assemblyPath);
                 }
 
                 return Result.Succeeded;
@@ -334,6 +444,30 @@ namespace BIMKraft
 
             // Set icon
             buttonData.LargeImage = LoadIcon("family_renamer.png");
+
+            panel.AddItem(buttonData);
+        }
+
+        private void CreateManageLicenseButton(RibbonPanel panel, string assemblyPath)
+        {
+            PushButtonData buttonData = new PushButtonData(
+                "BIMKraftManageLicense",
+                "Manage\nLicense",
+                assemblyPath,
+                "BIMKraft.Commands.LicenseTools.ManageLicenseCommand"
+            );
+
+            buttonData.ToolTip = "BIMKraft License Manager - Activate License or Start Trial";
+            buttonData.LongDescription =
+                "Manage your BIMKraft license:\n" +
+                "• View license status and expiry date\n" +
+                "• Start 30-day free trial\n" +
+                "• Activate paid license with license key\n" +
+                "• Deactivate current license\n" +
+                "• Purchase license at bimkraft.com/pricing";
+
+            // Set icon (if available)
+            buttonData.LargeImage = LoadIcon("manage_license.png");
 
             panel.AddItem(buttonData);
         }

@@ -33,10 +33,15 @@
     <!-- Commands - Family Tools -->
     <Compile Include="Commands\FamilyTools\FamilyRenamerCommand.cs" />
 
+    <!-- Commands - License Tools -->
+    <Compile Include="Commands\LicenseTools\ManageLicenseCommand.cs" />
+
     <!-- Services -->
     <Compile Include="Services\WorksetService.cs" />
     <Compile Include="Services\LineColorStorageService.cs" />
     <Compile Include="Services\LineLengthPresetService.cs" />
+    <Compile Include="Services\LicenseManager.cs" />
+    <Compile Include="Services\LicenseCrypto.cs" />
 
     <!-- Application -->
     <Compile Include="BIMKraftRibbonApplication.cs" />
@@ -69,6 +74,11 @@
       <DependentUpon>FamilyRenamerWindow.xaml</DependentUpon>
     </Compile>
 
+    <!-- Windows - Licensing -->
+    <Compile Include="UI\Licensing\LicenseActivationWindow.xaml.cs">
+      <DependentUpon>LicenseActivationWindow.xaml</DependentUpon>
+    </Compile>
+
     <!-- Models -->
     <Compile Include="Models\ParameterConfig.cs" />
     <Compile Include="Models\PresetData.cs" />
@@ -79,6 +89,9 @@
     <Compile Include="Models\WorksetRule.cs" />
     <Compile Include="Models\WorksetConfiguration.cs" />
     <Compile Include="Models\WorksetPresets.cs" />
+    <Compile Include="Models\LicenseInfo.cs" />
+    <Compile Include="Models\TrialInfo.cs" />
+    <Compile Include="Models\LicenseEnums.cs" />
 
     <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -106,6 +119,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Commands\FamilyTools\FamilyRenamerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Licensing\LicenseActivationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -151,6 +168,7 @@
       <HintPath>$(RevitAPIPath)\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Management" />
   </ItemGroup>
 
   <ItemGroup>

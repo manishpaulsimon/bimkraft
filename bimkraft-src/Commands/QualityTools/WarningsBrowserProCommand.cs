@@ -3,6 +3,7 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BIMKraft.Windows;
+using BIMKraft.Services;
 
 namespace BIMKraft.Commands.QualityTools
 {
@@ -14,6 +15,18 @@ namespace BIMKraft.Commands.QualityTools
         {
             try
             {
+                // Check license
+                if (!LicenseManager.IsFeatureAvailable("all"))
+                {
+                    TaskDialog.Show(
+                        "License Required",
+                        "Your BIMKraft license has expired or is invalid.\n\n" +
+                        "Please activate a license or start a trial to use this feature.\n\n" +
+                        "Use the 'Manage License' button in the BIMKraft ribbon."
+                    );
+                    return Result.Cancelled;
+                }
+
                 UIApplication uiApp = commandData.Application;
                 UIDocument uiDoc = uiApp.ActiveUIDocument;
                 Document doc = uiDoc.Document;

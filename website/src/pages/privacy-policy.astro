@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { readFileSync } from 'fs';
+import { marked } from 'marked';
+
+// Read and convert the markdown file
+const privacyContent = readFileSync('../../docs/privacy-policy.md', 'utf-8');
+const privacyHtml = marked(privacyContent);
+---
+
+<Layout title="Privacy Policy - BIM Kraft Tools">
+  <div class="container mx-auto px-6 py-12 max-w-4xl">
+    <div class="prose prose-lg dark:prose-invert max-w-none">
+      <Fragment set:html={privacyHtml} />
+    </div>
+
+    <div class="mt-12 p-6 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-700">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Your Privacy Matters</h3>
+      <p class="text-gray-700 dark:text-gray-300 mb-4">
+        We are committed to protecting your privacy and being transparent about our data practices. For privacy-related questions or to exercise your rights:
+      </p>
+      <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+        <li><strong>Privacy Email:</strong> <a href="mailto:privacy@bimkraft.de" class="text-blue-600 dark:text-blue-400 hover:underline">privacy@bimkraft.de</a></li>
+        <li><strong>Data Requests:</strong> Access, modify, or delete your data</li>
+        <li><strong>Response Time:</strong> Within 30 days (GDPR requirement)</li>
+      </ul>
+    </div>
+
+    <div class="mt-8 grid md:grid-cols-2 gap-4">
+      <a href="/terms-of-service" class="block bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-200">
+        View Terms of Service
+      </a>
+      <a href="/pricing" class="block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-200">
+        View Pricing
+      </a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .prose :global(h1) {
+    @apply text-4xl font-bold text-gray-900 dark:text-white mb-6 mt-8;
+  }
+
+  .prose :global(h2) {
+    @apply text-2xl font-bold text-gray-900 dark:text-white mb-4 mt-8;
+  }
+
+  .prose :global(h3) {
+    @apply text-xl font-bold text-gray-800 dark:text-gray-200 mb-3 mt-6;
+  }
+
+  .prose :global(p) {
+    @apply text-gray-700 dark:text-gray-300 mb-4;
+  }
+
+  .prose :global(ul), .prose :global(ol) {
+    @apply text-gray-700 dark:text-gray-300 mb-4 ml-6;
+  }
+
+  .prose :global(li) {
+    @apply mb-2;
+  }
+
+  .prose :global(strong) {
+    @apply font-bold text-gray-900 dark:text-white;
+  }
+
+  .prose :global(a) {
+    @apply text-blue-600 dark:text-blue-400 hover:underline;
+  }
+
+  .prose :global(table) {
+    @apply w-full border-collapse mb-6;
+  }
+
+  .prose :global(th) {
+    @apply bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 px-4 py-2 text-left font-bold;
+  }
+
+  .prose :global(td) {
+    @apply border border-gray-300 dark:border-gray-700 px-4 py-2;
+  }
+
+  .prose :global(hr) {
+    @apply my-8 border-gray-300 dark:border-gray-700;
+  }
+
+  .prose :global(blockquote) {
+    @apply border-l-4 border-blue-500 pl-4 italic my-4;
+  }
+</style>
